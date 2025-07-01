@@ -8,7 +8,7 @@ const SidebarContainer = styled.div`
   background: ${props => props.theme.colors.background};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 12px;
-  padding: 1rem; // Reduced from 1.5rem
+  padding: 1rem;
   height: fit-content;
   position: sticky;
   top: 90px;
@@ -28,21 +28,9 @@ const SidebarContainer = styled.div`
   }
 `;
 
-const SidebarHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem; // Reduced from 1.5rem
-  
-  h3 {
-    font-size: 1.1rem; // Reduced from 1.2rem
-    font-weight: 600;
-    color: ${props => props.theme.colors.primary};
-  }
-`;
-
+// Make all sections more compact:
 const FilterSection = styled.div`
-  margin-bottom: 1.2rem; // Reduced from 2rem
+  margin-bottom: 1rem; // Reduced from 1.2rem
   
   &:last-child {
     margin-bottom: 0;
@@ -50,20 +38,20 @@ const FilterSection = styled.div`
 `;
 
 const FilterTitle = styled.h4`
-  font-size: 0.9rem; // Reduced from 1rem
+  font-size: 0.85rem; // Reduced from 0.9rem
   font-weight: 600;
   color: ${props => props.theme.colors.text};
-  margin-bottom: 0.8rem; // Reduced from 1rem
+  margin-bottom: 0.6rem; // Reduced from 0.8rem
 `;
 
 const FilterSelect = styled.select`
   width: 100%;
-  padding: 0.6rem; // Reduced from 0.8rem
+  padding: 0.5rem; // Reduced from 0.6rem
   border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 6px; // Reduced from 8px
+  border-radius: 6px;
   background: ${props => props.theme.colors.background};
   color: ${props => props.theme.colors.text};
-  font-size: 0.85rem; // Reduced from 0.9rem
+  font-size: 0.8rem; // Reduced from 0.85rem
   cursor: pointer;
   
   &:focus {
@@ -74,10 +62,10 @@ const FilterSelect = styled.select`
 
 const PriceInput = styled.input`
   flex: 1;
-  padding: 0.5rem; // Reduced from 0.6rem
+  padding: 0.4rem; // Reduced from 0.5rem
   border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 4px; // Reduced from 6px
-  font-size: 0.85rem; // Reduced from 0.9rem
+  border-radius: 4px;
+  font-size: 0.8rem; // Reduced from 0.85rem
   
   &:focus {
     outline: none;
@@ -88,30 +76,46 @@ const PriceInput = styled.input`
 const RatingFilter = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.6rem; // Reduced from 0.8rem
+  gap: 0.5rem; // Reduced from 0.6rem
 `;
 
 const RatingOption = styled.label`
   display: flex;
   align-items: center;
-  gap: 0.4rem; // Reduced from 0.5rem
+  gap: 0.3rem; // Reduced from 0.4rem
   cursor: pointer;
-  font-size: 0.85rem; // Reduced from 0.9rem
+  font-size: 0.8rem; // Reduced from 0.85rem
   
   input {
     margin: 0;
+    transform: scale(0.9); // Make radio buttons smaller
   }
 `;
 
 const CheckboxContainer = styled.label`
   display: flex;
   align-items: center;
-  gap: 0.6rem; // Reduced from 0.8rem
+  gap: 0.5rem; // Reduced from 0.6rem
   cursor: pointer;
-  font-size: 0.85rem; // Reduced from 0.9rem
+  font-size: 0.8rem; // Reduced from 0.85rem
   
   input {
     margin: 0;
+    transform: scale(0.9); // Make checkbox smaller
+  }
+`;
+
+
+const SidebarHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; // Reduced from 1.5rem
+  
+  h3 {
+    font-size: 1.1rem; // Reduced from 1.2rem
+    font-weight: 600;
+    color: ${props => props.theme.colors.primary};
   }
 `;
 

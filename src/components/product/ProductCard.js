@@ -5,6 +5,28 @@ import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage, FiChevronLeft, FiChe
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 
+const ActionButtons = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 3;
+`;
+
+// Update the ImageCarousel height for larger cards:
+const ImageCarousel = styled.div`
+  position: relative;
+  width: 100%;
+  height: 260px; // Increased from 220px
+  overflow: hidden;
+  background: linear-gradient(135deg, ${props => props.theme.colors.backgroundSecondary} 0%, #f0f0f0 100%);
+`;
+
 // Animations
 const fadeIn = keyframes`
   from {
@@ -15,6 +37,105 @@ const fadeIn = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
+`;
+
+// Update CardContent padding for larger cards:
+const CardContent = styled.div`
+  padding: 1.8rem; // Increased from 1.5rem
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  animation: ${fadeIn} 0.6s ease;
+`;
+
+// Update font sizes for larger cards:
+const ProductBrand = styled.p`
+  font-size: 0.85rem; // Increased from 0.8rem
+  color: ${props => props.theme.colors.textMuted};
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.6rem; // Increased from 0.5rem
+  font-weight: 600;
+`;
+
+const ProductName = styled.h3`
+  font-size: 1.2rem; // Increased from 1.1rem
+  font-weight: 700;
+  color: ${props => props.theme.colors.text};
+  margin-bottom: 1rem; // Increased from 0.8rem
+  line-height: 1.3;
+  min-height: 2.8rem; // Increased from 2.6rem
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const CurrentPrice = styled.span`
+  font-size: 1.5rem; // Increased from 1.4rem
+  font-weight: 800;
+  color: ${props => props.theme.colors.primary};
+  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
+const AddToCartButton = styled.button`
+  width: 100%;
+  padding: 1.1rem; // Increased from 1rem
+  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
+  color: ${props => props.theme.colors.background};
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.05rem; // Increased from 1rem
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem; // Increased from 0.5rem
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(44, 44, 44, 0.3);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: ${props => props.theme.colors.textMuted};
+  }
+  
+  ${props => props.preOrder && `
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    
+    &:hover {
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+    }
+  `}
 `;
 
 const slideIn = keyframes`
@@ -39,6 +160,8 @@ const pulse = keyframes`
     transform: scale(1);
   }
 `;
+
+// Add to your existing styled components:
 
 const CardContainer = styled.div`
   background: ${props => props.theme.colors.background};
@@ -72,15 +195,15 @@ const CardContainer = styled.div`
   &:hover .quick-view {
     transform: translateY(0);
   }
+  
+  // Better responsive behavior for larger cards
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    &:hover {
+      transform: translateY(-4px) scale(1.01); // Less dramatic on mobile
+    }
+  }
 `;
 
-const ImageCarousel = styled.div`
-  position: relative;
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
-  background: linear-gradient(135deg, ${props => props.theme.colors.backgroundSecondary} 0%, #f0f0f0 100%);
-`;
 
 const ImageContainer = styled.div`
   display: flex;
@@ -212,19 +335,6 @@ const Badge = styled.span`
   `}
 `;
 
-const ActionButtons = styled.div`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 3;
-`;
-
 const ActionButton = styled.button`
   width: 36px;
   height: 36px;
@@ -274,36 +384,6 @@ const QuickView = styled.div`
   }
 `;
 
-const CardContent = styled.div`
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  animation: ${fadeIn} 0.6s ease;
-`;
-
-const ProductBrand = styled.p`
-  font-size: 0.8rem;
-  color: ${props => props.theme.colors.textMuted};
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-`;
-
-const ProductName = styled.h3`
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: ${props => props.theme.colors.text};
-  margin-bottom: 0.8rem;
-  line-height: 1.3;
-  min-height: 2.6rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
 const RatingContainer = styled.div`
   display: flex;
   align-items: center;
@@ -334,15 +414,6 @@ const PriceContainer = styled.div`
   align-items: center;
   gap: 0.8rem;
   margin-bottom: 1rem;
-`;
-
-const CurrentPrice = styled.span`
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: ${props => props.theme.colors.primary};
-  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 `;
 
 const OriginalPrice = styled.span`
@@ -377,69 +448,11 @@ const CardSpacer = styled.div`
   flex-grow: 1;
 `;
 
-const AddToCartButton = styled.button`
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
-  color: ${props => props.theme.colors.background};
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: auto;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(44, 44, 44, 0.3);
-    
-    &::before {
-      left: 100%;
-    }
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: ${props => props.theme.colors.textMuted};
-  }
-  
-  ${props => props.preOrder && `
-    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-    
-    &:hover {
-      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
-    }
-  `}
-`;
-
 const ProductCard = ({ product, onPreOrderClick }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+
   const isWishlisted = isInWishlist(product.id);
   const images = product.images || [];
   const hasImages = images.length > 0;
@@ -507,7 +520,7 @@ const ProductCard = ({ product, onPreOrderClick }) => {
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    
+
     for (let i = 0; i < 5; i++) {
       stars.push(
         <Star key={i} filled={i < fullStars} />
@@ -521,8 +534,8 @@ const ProductCard = ({ product, onPreOrderClick }) => {
       <ImageCarousel className="image-carousel">
         {hasImages ? (
           <>
-            <ImageContainer 
-              currentIndex={currentImageIndex} 
+            <ImageContainer
+              currentIndex={currentImageIndex}
               imageCount={images.length}
             >
               {images.map((image, index) => (
@@ -537,24 +550,24 @@ const ProductCard = ({ product, onPreOrderClick }) => {
                 />
               ))}
             </ImageContainer>
-            
+
             {images.length > 1 && (
               <>
-                <NavButton 
-                  className="nav-button prev" 
+                <NavButton
+                  className="nav-button prev"
                   onClick={prevImage}
                   disabled={currentImageIndex === 0}
                 >
                   <FiChevronLeft />
                 </NavButton>
-                <NavButton 
-                  className="nav-button next" 
+                <NavButton
+                  className="nav-button next"
                   onClick={nextImage}
                   disabled={currentImageIndex === images.length - 1}
                 >
                   <FiChevronRight />
                 </NavButton>
-                
+
                 <ImageIndicators>
                   {images.map((_, index) => (
                     <Indicator
@@ -572,7 +585,7 @@ const ProductCard = ({ product, onPreOrderClick }) => {
             ⌚
           </ImagePlaceholder>
         )}
-        
+
         {badges.length > 0 && (
           <BadgeContainer>
             {badges.map((badge, index) => (
@@ -582,32 +595,32 @@ const ProductCard = ({ product, onPreOrderClick }) => {
             ))}
           </BadgeContainer>
         )}
-        
+
         <ActionButtons className="action-buttons">
-          <ActionButton 
+          <ActionButton
+            onClick={handleQuickView}
+            title="Quick View"
+          >
+            <FiEye />
+          </ActionButton>
+          <ActionButton
             onClick={handleWishlistToggle}
             active={isWishlisted}
             title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
           >
             <FiHeart />
           </ActionButton>
-          <ActionButton 
-            onClick={handleQuickView}
-            title="Quick View"
-          >
-            <FiEye />
-          </ActionButton>
         </ActionButtons>
-        
+
         <QuickView className="quick-view" onClick={handleQuickView}>
           Quick View
         </QuickView>
       </ImageCarousel>
-      
+
       <CardContent>
         <ProductBrand>{brand}</ProductBrand>
         <ProductName>{name}</ProductName>
-        
+
         {rating > 0 ? (
           <RatingContainer>
             <StarRating>
@@ -618,9 +631,9 @@ const ProductCard = ({ product, onPreOrderClick }) => {
         ) : (
           <RatingContainer />
         )}
-        
+
         <GenderTag>{gender}</GenderTag>
-        
+
         <PriceContainer>
           <CurrentPrice>${price}</CurrentPrice>
           {originalPrice && originalPrice > price && (
@@ -630,16 +643,16 @@ const ProductCard = ({ product, onPreOrderClick }) => {
             </>
           )}
         </PriceContainer>
-        
+
         <CardSpacer />
-        
+
         {inStock ? (
           <AddToCartButton onClick={handleAddToCart}>
             <FiShoppingCart />
             Add to Cart
           </AddToCartButton>
         ) : (
-          <AddToCartButton 
+          <AddToCartButton
             preOrder
             onClick={handlePreOrder}
           >
