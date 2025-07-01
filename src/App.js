@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useState } from 'react';
 import ThemeProvider from './theme/ThemeProvider';
 import { CartProvider } from './context/CartContext';
 import { FilterProvider } from './context/FilterContext';
@@ -13,7 +13,15 @@ import { sampleProducts } from './data/products';
 import './App.css';
 
 function App() {
-  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+  const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' });
+
+  const handleAuthModalOpen = (mode = 'login') => {
+    setAuthModal({ isOpen: true, mode });
+  };
+
+  const handleAuthModalClose = () => {
+    setAuthModal({ isOpen: false, mode: 'login' });
+  };
 
   return (
     <ThemeProvider>
@@ -21,13 +29,14 @@ function App() {
         <CartProvider>
           <FilterProvider>
             <div className="App">
-              <Header />
+              <Header onAuthModalOpen={handleAuthModalOpen} />
               <Router products={sampleProducts} />
               <Footer />
               <CartDropdown />
               <AuthModal 
-                isOpen={isAuthModalOpen} 
-                onClose={() => setIsAuthModalOpen(false)} 
+                isOpen={authModal.isOpen}
+                onClose={handleAuthModalClose}
+                initialMode={authModal.mode}
               />
             </div>
           </FilterProvider>

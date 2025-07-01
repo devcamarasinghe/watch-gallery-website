@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import CatalogPage from '../pages/CatalogPage';
 import AboutPage from '../pages/AboutPage';
 import ContactPage from '../pages/ContactPage';
+import ProfilePage from '../pages/ProfilePage';
 
 const Router = ({ products }) => {
   const [currentPage, setCurrentPage] = useState('catalog');
@@ -13,6 +14,8 @@ const Router = ({ products }) => {
         return <AboutPage />;
       case 'contact':
         return <ContactPage />;
+      case 'profile':
+        return <ProfilePage />;
       case 'catalog':
       default:
         return <CatalogPage products={products} />;
