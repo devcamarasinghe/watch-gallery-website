@@ -7,12 +7,14 @@ import ProductGrid from '../components/product/ProductGrid';
 import { useProductFilter } from '../hooks/useProductFilter';
 import { useFilter } from '../context/FilterContext';
 
+// Update the CatalogContainer and layout:
+
 const CatalogContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1400px; // Increased from 1200px
   margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem; // Reduced from 2rem
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     flex-direction: column;
@@ -21,7 +23,7 @@ const CatalogContainer = styled.div`
 `;
 
 const Sidebar = styled.aside`
-  flex: 0 0 280px;
+  flex: 0 0 240px; // Reduced from 280px
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     flex: none;
@@ -30,27 +32,29 @@ const Sidebar = styled.aside`
 
 const MainContent = styled.main`
   flex: 1;
+  min-width: 0; // Prevents flex item from overflowing
 `;
 
 const CatalogHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; // Reduced from 2rem
   flex-wrap: wrap;
   gap: 1rem;
 `;
 
 const ResultsInfo = styled.div`
   h2 {
-    font-size: 1.8rem;
+    font-size: 1.6rem; // Reduced from 1.8rem
     font-weight: 600;
     color: ${props => props.theme.colors.primary};
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem; // Reduced from 0.5rem
   }
   
   p {
     color: ${props => props.theme.colors.textMuted};
+    font-size: 0.9rem; // Added smaller font
   }
 `;
 
