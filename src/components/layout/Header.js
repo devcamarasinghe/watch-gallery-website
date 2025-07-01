@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from 'react-icons/fi';
 import { useFilter } from '../../context/FilterContext';
+import { useCart } from '../../context/CartContext';
 
 const HeaderContainer = styled.header`
   background-color: ${props => props.theme.colors.background};
@@ -175,7 +176,8 @@ const Header = () => {
     setSearchQuery,
     setGender
   } = useFilter();
-  const cartItemCount = 3; // This will come from state management later
+
+  const { itemCount, toggleCart } = useCart(); // Add this line
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -227,10 +229,10 @@ const Header = () => {
             <FiUser />
           </IconButton>
 
-          <IconButton>
+          <IconButton onClick={toggleCart}>
             <FiShoppingCart />
-            {cartItemCount > 0 && (
-              <CartBadge>{cartItemCount}</CartBadge>
+            {itemCount > 0 && (
+              <CartBadge>{itemCount}</CartBadge>
             )}
           </IconButton>
 

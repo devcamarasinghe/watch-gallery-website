@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
+import { useCart } from '../../context/CartContext';
 
 const CardContainer = styled.div`
   background: ${props => props.theme.colors.background};
@@ -235,7 +236,8 @@ const AddToCartButton = styled.button`
 
 const ProductCard = ({ product }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
-  
+  const { addToCart } = useCart(); // Add this line
+
   const {
     id,
     name,
@@ -263,7 +265,11 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    console.log('Add to cart:', id);
+    if (product.inStock) {
+      addToCart(product, 1);
+      // Optional: Show success message
+      console.log(`Added ${product.name} to cart`);
+    }
   };
 
   const handleCardClick = () => {
@@ -273,7 +279,7 @@ const ProductCard = ({ product }) => {
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    
+
     for (let i = 0; i < 5; i++) {
       stars.push(
         <Star key={i} filled={i < fullStars} />
@@ -292,7 +298,7 @@ const ProductCard = ({ product }) => {
             ⌚
           </ImagePlaceholder>
         )}
-        
+
         {badges.length > 0 && (
           <BadgeContainer>
             {badges.map((badge, index) => (
@@ -302,16 +308,16 @@ const ProductCard = ({ product }) => {
             ))}
           </BadgeContainer>
         )}
-        
+
         <ActionButtons>
-          <ActionButton 
+          <ActionButton
             onClick={handleWishlistToggle}
             active={isWishlisted}
             title="Add to Wishlist"
           >
             <FiHeart />
           </ActionButton>
-          <ActionButton 
+          <ActionButton
             onClick={handleQuickView}
             title="Quick View"
           >
@@ -319,11 +325,11 @@ const ProductCard = ({ product }) => {
           </ActionButton>
         </ActionButtons>
       </ImageContainer>
-      
+
       <CardContent>
         <ProductBrand>{brand}</ProductBrand>
         <ProductName>{name}</ProductName>
-        
+
         {rating > 0 && (
           <RatingContainer>
             <StarRating>
@@ -332,9 +338,9 @@ const ProductCard = ({ product }) => {
             <ReviewCount>({reviewCount})</ReviewCount>
           </RatingContainer>
         )}
-        
+
         <GenderTag>{gender}</GenderTag>
-        
+
         <PriceContainer>
           <CurrentPrice>${price}</CurrentPrice>
           {originalPrice && originalPrice > price && (
@@ -344,8 +350,8 @@ const ProductCard = ({ product }) => {
             </>
           )}
         </PriceContainer>
-        
-        <AddToCartButton 
+
+        <AddToCartButton
           onClick={handleAddToCart}
           disabled={!inStock}
         >
