@@ -322,7 +322,7 @@ const Header = ({ onAuthModalOpen }) => {
     <HeaderContainer>
       <HeaderContent>
         <Logo onClick={() => window.navigateTo && window.navigateTo('catalog')}>
-          Watch<span>Shop</span>
+          Lux<span>Watch</span>
         </Logo>
 
         <Navigation isOpen={isMenuOpen}>

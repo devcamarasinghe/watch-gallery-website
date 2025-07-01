@@ -219,7 +219,7 @@ const AboutPage = () => {
   return (
     <AboutContainer>
       <HeroSection>
-        <HeroTitle>About WatchShop</HeroTitle>
+        <HeroTitle>About LuxWatch</HeroTitle>
         <HeroSubtitle>
           Crafting timeless elegance since 2020. We believe every moment deserves 
           the perfect timepiece to mark its significance.
@@ -232,7 +232,7 @@ const AboutPage = () => {
           <StoryContent>
             <h3>Founded on Passion</h3>
             <p>
-              WatchShop was born from a simple belief: that time is precious, and the 
+              LuxWatch was born from a simple belief: that time is precious, and the 
               instruments we use to measure it should be equally extraordinary. Founded 
               in 2020 by watch enthusiasts, we set out to create a destination where 
               craftsmanship meets accessibility.

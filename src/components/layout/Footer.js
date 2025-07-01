@@ -324,7 +324,7 @@ const Footer = () => {
 
         <FooterBottom>
           <div>
-            <p>&copy; 2025 WatchShop. All rights reserved.</p>
+            <p>&copy; 2025 LuxWatch. All rights reserved.</p>
             <div style={{ marginTop: '0.5rem' }}>
               <a href="/privacy" style={{ color: 'inherit', marginRight: '1rem' }}>Privacy Policy</a>
               <a href="/terms" style={{ color: 'inherit' }}>Terms of Service</a>
