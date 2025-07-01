@@ -3,6 +3,8 @@ import React from 'react';
 import ThemeProvider from './theme/ThemeProvider';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import ProductGrid from './components/product/ProductGrid';
+import { sampleProducts } from './data/products';
 import './App.css';
 
 function App() {
@@ -11,30 +13,31 @@ function App() {
       <div className="App">
         <Header />
         <main style={{ 
-          padding: '2rem', 
-          minHeight: '60vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
+          padding: '2rem 1rem',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          minHeight: '60vh'
         }}>
-          <h1 style={{ 
-            fontFamily: 'Playfair Display, serif',
-            fontSize: '3rem',
-            marginBottom: '1rem',
-            color: '#2C2C2C'
-          }}>
-            Welcome to WatchShop
-          </h1>
-          <p style={{ 
-            fontSize: '1.2rem',
-            color: '#666666',
-            textAlign: 'center',
-            maxWidth: '600px'
-          }}>
-            Discover our exquisite collection of luxury timepieces. 
-            From classic elegance to modern sophistication, find the perfect watch that defines your style.
-          </p>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h1 style={{ 
+              fontFamily: 'Playfair Display, serif',
+              fontSize: '2.5rem',
+              marginBottom: '1rem',
+              color: '#2C2C2C'
+            }}>
+              Featured Watches
+            </h1>
+            <p style={{ 
+              fontSize: '1.1rem',
+              color: '#666666',
+              maxWidth: '600px',
+              margin: '0 auto'
+            }}>
+              Discover our handpicked selection of premium timepieces
+            </p>
+          </div>
+          
+          <ProductGrid products={sampleProducts} />
         </main>
         <Footer />
       </div>
