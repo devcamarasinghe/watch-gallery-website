@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 const CardContainer = styled.div`
   background: ${props => props.theme.colors.background};
@@ -235,8 +236,10 @@ const AddToCartButton = styled.button`
 `;
 
 const ProductCard = ({ product }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const { addToCart } = useCart(); // Add this line
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const isWishlisted = isInWishlist(product.id);
 
   const {
     id,
@@ -255,7 +258,11 @@ const ProductCard = ({ product }) => {
 
   const handleWishlistToggle = (e) => {
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
   };
 
   const handleQuickView = (e) => {
@@ -313,7 +320,7 @@ const ProductCard = ({ product }) => {
           <ActionButton
             onClick={handleWishlistToggle}
             active={isWishlisted}
-            title="Add to Wishlist"
+            title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
           >
             <FiHeart />
           </ActionButton>

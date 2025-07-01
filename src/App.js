@@ -4,6 +4,7 @@ import ThemeProvider from './theme/ThemeProvider';
 import { CartProvider } from './context/CartContext';
 import { FilterProvider } from './context/FilterContext';
 import { AuthProvider } from './context/AuthContext';
+import { WishlistProvider } from './context/WishlistContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import CartDropdown from './components/cart/CartDropdown';
@@ -26,21 +27,26 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <CartProvider>
-          <FilterProvider>
-            <div className="App">
-              <Header onAuthModalOpen={handleAuthModalOpen} />
-              <Router products={sampleProducts} />
-              <Footer />
-              <CartDropdown />
-              <AuthModal 
-                isOpen={authModal.isOpen}
-                onClose={handleAuthModalClose}
-                initialMode={authModal.mode}
-              />
-            </div>
-          </FilterProvider>
-        </CartProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <FilterProvider>
+              <div className="App">
+                <Header onAuthModalOpen={handleAuthModalOpen} />
+                <Router 
+                  products={sampleProducts} 
+                  onAuthModalOpen={handleAuthModalOpen}
+                />
+                <Footer />
+                <CartDropdown />
+                <AuthModal 
+                  isOpen={authModal.isOpen}
+                  onClose={handleAuthModalClose}
+                  initialMode={authModal.mode}
+                />
+              </div>
+            </FilterProvider>
+          </CartProvider>
+        </WishlistProvider>
       </AuthProvider>
     </ThemeProvider>
   );

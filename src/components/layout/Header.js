@@ -1,10 +1,11 @@
 // src/components/layout/Header.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX, FiHeart, FiLogOut } from 'react-icons/fi';
 import { useFilter } from '../../context/FilterContext';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 const HeaderContainer = styled.header`
   background-color: ${props => props.theme.colors.background};
@@ -265,6 +266,26 @@ const WishlistButton = styled(IconButton)`
 const Header = ({ onAuthModalOpen }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { itemCount: wishlistCount } = useWishlist();
+  const userMenuRef = useRef(null);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
+
 
   const {
     searchQuery,
@@ -296,9 +317,6 @@ const Header = ({ onAuthModalOpen }) => {
     logout();
     setIsUserMenuOpen(false);
   };
-
-  // Mock wishlist count - replace with real data later
-  const wishlistCount = user?.wishlist?.length || 0;
 
   return (
     <HeaderContainer>
@@ -346,8 +364,13 @@ const Header = ({ onAuthModalOpen }) => {
         <HeaderActions>
           {/* Wishlist - only show for authenticated users */}
           {isAuthenticated && (
-            <WishlistButton hasItems={wishlistCount > 0} title="Wishlist">
+            <WishlistButton
+              hasItems={wishlistCount > 0}
+              title="Wishlist"
+              onClick={() => window.navigateTo && window.navigateTo('wishlist')}
+            >
               <FiHeart />
+              <CartBadge>{wishlistCount}</CartBadge>
             </WishlistButton>
           )}
 
@@ -360,7 +383,7 @@ const Header = ({ onAuthModalOpen }) => {
           </IconButton>
 
           {/* User Menu */}
-          <UserMenu>
+          <UserMenu ref={userMenuRef}>
             <UserButton onClick={handleAuthClick} title={isAuthenticated ? 'Account' : 'Sign In'}>
               <FiUser />
               {isAuthenticated && (
@@ -377,7 +400,10 @@ const Header = ({ onAuthModalOpen }) => {
                   <p>{user.email}</p>
                 </UserInfo>
 
-                <DropdownItem onClick={() => { setIsUserMenuOpen(false); /* Navigate to profile */ }}>
+                <DropdownItem onClick={() => {
+                  setIsUserMenuOpen(false);
+                  window.navigateTo && window.navigateTo('profile');
+                }}>
                   <FiUser />
                   My Profile
                 </DropdownItem>
@@ -387,7 +413,10 @@ const Header = ({ onAuthModalOpen }) => {
                   My Orders
                 </DropdownItem>
 
-                <DropdownItem onClick={() => { setIsUserMenuOpen(false); /* Navigate to wishlist */ }}>
+                <DropdownItem onClick={() => {
+                  setIsUserMenuOpen(false);
+                  window.navigateTo && window.navigateTo('wishlist');
+                }}>
                   <FiHeart />
                   Wishlist ({wishlistCount})
                 </DropdownItem>
