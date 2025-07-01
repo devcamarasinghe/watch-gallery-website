@@ -276,10 +276,9 @@ const CartPage = () => {
   const tax = total * 0.08; // 8% tax
   const finalTotal = subtotal + shipping + tax;
 
-  const handleCheckout = () => {
-    console.log('Proceeding to checkout');
-    alert('Checkout functionality coming soon!');
-  };
+const handleCheckout = () => {
+  window.navigateTo && window.navigateTo('checkout');
+};
 
   if (items.length === 0) {
     return (

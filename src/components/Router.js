@@ -4,6 +4,7 @@ import CatalogPage from '../pages/CatalogPage';
 import AboutPage from '../pages/AboutPage';
 import ContactPage from '../pages/ContactPage';
 import ProfilePage from '../pages/ProfilePage';
+import CheckoutPage from '../pages/CheckoutPage';
 
 const Router = ({ products }) => {
   const [currentPage, setCurrentPage] = useState('catalog');
@@ -16,6 +17,8 @@ const Router = ({ products }) => {
         return <ContactPage />;
       case 'profile':
         return <ProfilePage />;
+      case 'checkout':
+        return <CheckoutPage />;
       case 'catalog':
       default:
         return <CatalogPage products={products} />;

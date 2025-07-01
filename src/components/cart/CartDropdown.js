@@ -250,15 +250,15 @@ const ClearCartButton = styled.button`
 `;
 
 const CartDropdown = () => {
-  const { 
-    items, 
-    isOpen, 
-    total, 
+  const {
+    items,
+    isOpen,
+    total,
     itemCount,
-    removeFromCart, 
-    updateQuantity, 
-    clearCart, 
-    setCartOpen 
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    setCartOpen
   } = useCart();
 
   const handleOverlayClick = () => {
@@ -270,9 +270,8 @@ const CartDropdown = () => {
   };
 
   const handleCheckout = () => {
-    console.log('Proceeding to checkout with items:', items);
-    // Here you would typically navigate to checkout page
-    alert('Checkout functionality will be implemented next!');
+    setCartOpen(false);
+    window.navigateTo && window.navigateTo('checkout');
   };
 
   return (
