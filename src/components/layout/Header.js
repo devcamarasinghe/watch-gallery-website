@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from 'react-icons/fi';
+import { useFilter } from '../../context/FilterContext';
 
 const HeaderContainer = styled.header`
   background-color: ${props => props.theme.colors.background};
@@ -168,8 +169,12 @@ const MobileMenuButton = styled.button`
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedGender, setSelectedGender] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const {
+    searchQuery,
+    selectedGender,
+    setSearchQuery,
+    setGender
+  } = useFilter();
   const cartItemCount = 3; // This will come from state management later
 
   const toggleMenu = () => {
@@ -189,18 +194,18 @@ const Header = () => {
           <NavLink href="/">Home</NavLink>
           <NavLink href="/catalog">Catalog</NavLink>
           <NavLink href="/brands">Brands</NavLink>
-          
+
           {/* Gender Filter Dropdown */}
-          <GenderFilter 
-            value={selectedGender} 
-            onChange={(e) => setSelectedGender(e.target.value)}
+          <GenderFilter
+            value={selectedGender}
+            onChange={(e) => setGender(e.target.value)}
           >
             <option value="all">All Watches</option>
             <option value="men">Men's Watches</option>
             <option value="women">Women's Watches</option>
             <option value="unisex">Unisex</option>
           </GenderFilter>
-          
+
           <NavLink href="/about">About</NavLink>
           <NavLink href="/contact">Contact</NavLink>
         </Navigation>
@@ -208,8 +213,8 @@ const Header = () => {
         {/* Search Bar */}
         <SearchContainer>
           <SearchIcon />
-          <SearchInput 
-            type="text" 
+          <SearchInput
+            type="text"
             placeholder="Search watches..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -221,14 +226,14 @@ const Header = () => {
           <IconButton>
             <FiUser />
           </IconButton>
-          
+
           <IconButton>
             <FiShoppingCart />
             {cartItemCount > 0 && (
               <CartBadge>{cartItemCount}</CartBadge>
             )}
           </IconButton>
-          
+
           <MobileMenuButton onClick={toggleMenu}>
             {isMenuOpen ? <FiX /> : <FiMenu />}
           </MobileMenuButton>
