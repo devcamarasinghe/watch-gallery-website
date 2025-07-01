@@ -7,7 +7,11 @@ export const sampleProducts = [
     price: 299,
     originalPrice: 399,
     discount: 25,
-    image: null, // We'll use placeholder for now
+    images: [
+      "/images/watches/watch-1/main.jpg",
+      "/images/watches/watch-1/side.jpg",
+      "/images/watches/watch-1/back.jpg"
+    ],
     rating: 4.5,
     reviewCount: 128,
     gender: "men",
@@ -35,7 +39,11 @@ export const sampleProducts = [
     price: 199,
     originalPrice: 249,
     discount: 20,
-    image: null,
+    images: [
+      "/images/watches/watch-2/main.jpg",
+      "/images/watches/watch-2/side.jpg",
+      "/images/watches/watch-2/back.jpg"
+    ],
     rating: 4.2,
     reviewCount: 256,
     gender: "unisex",
@@ -91,7 +99,11 @@ export const sampleProducts = [
     price: 899,
     originalPrice: 1199,
     discount: 25,
-    image: null,
+    images: [
+      "/images/watches/watch-3/main.jpg",
+      "/images/watches/watch-3/side.jpg",
+      "/images/watches/watch-3/back.jpg"
+    ],
     rating: 4.9,
     reviewCount: 78,
     gender: "women",
