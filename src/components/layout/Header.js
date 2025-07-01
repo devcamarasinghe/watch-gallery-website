@@ -408,7 +408,10 @@ const Header = ({ onAuthModalOpen }) => {
                   My Profile
                 </DropdownItem>
 
-                <DropdownItem onClick={() => { setIsUserMenuOpen(false); /* Navigate to orders */ }}>
+                <DropdownItem onClick={() => {
+                  setIsUserMenuOpen(false);
+                  window.navigateTo && window.navigateTo('orders');
+                }}>
                   <FiShoppingCart />
                   My Orders
                 </DropdownItem>

@@ -6,6 +6,7 @@ import ContactPage from '../pages/ContactPage';
 import ProfilePage from '../pages/ProfilePage';
 import CheckoutPage from '../pages/CheckoutPage';
 import WishlistPage from '../pages/WishlistPage';
+import OrdersPage from '../pages/OrdersPage';
 
 const Router = ({ products, onAuthModalOpen }) => {
   const [currentPage, setCurrentPage] = useState('catalog');
@@ -34,6 +35,8 @@ const Router = ({ products, onAuthModalOpen }) => {
         return <CheckoutPage />;
       case 'wishlist':
         return <WishlistPage onAuthModalOpen={onAuthModalOpen} />;
+      case 'orders':
+        return <OrdersPage onAuthModalOpen={onAuthModalOpen} />;
       case 'catalog':
       default:
         return <CatalogPage products={products} />;
