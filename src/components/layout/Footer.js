@@ -1,12 +1,12 @@
 // src/components/layout/Footer.js
 import React from 'react';
 import styled from 'styled-components';
-import { 
-  FiFacebook, 
-  FiTwitter, 
-  FiInstagram, 
-  FiMail, 
-  FiPhone, 
+import {
+  FiFacebook,
+  FiTwitter,
+  FiInstagram,
+  FiMail,
+  FiPhone,
   FiMapPin,
   FiCreditCard,
   FiShield,
@@ -224,24 +224,33 @@ const Footer = () => {
     <FooterContainer>
       <FooterContent>
         <FooterTop>
-          {/* Company Info */}
+
+          {/* Quick Links */}
           <FooterSection>
-            <h3>WatchShop</h3>
-            <p style={{ marginBottom: '1rem', lineHeight: '1.6' }}>
-              Discover luxury timepieces that define elegance and precision. 
-              Your trusted partner for premium watches since 2020.
-            </p>
-            <TrustBadges>
-              <TrustBadge>
-                <FiShield />
-                <span>Secure Shopping</span>
-              </TrustBadge>
-              <TrustBadge>
-                <FiTruck />
-                <span>Free Shipping</span>
-              </TrustBadge>
-            </TrustBadges>
+            <h3>Quick Links</h3>
+            <FooterLinks>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Home</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>All Watches</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Men's Watches</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Women's Watches</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>Brands</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>Sale</a></li>
+            </FooterLinks>
           </FooterSection>
+
+          {/* Customer Service */}
+          <FooterSection>
+            <h3>Customer Service</h3>
+            <FooterLinks>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('contact'); }}>Contact Us</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>Shipping Info</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>Returns & Exchanges</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>Warranty</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>Size Guide</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>FAQ</a></li>
+            </FooterLinks>
+          </FooterSection>
+
 
           {/* Quick Links */}
           <FooterSection>
@@ -290,8 +299,8 @@ const Footer = () => {
               Subscribe for exclusive offers and new arrivals
             </p>
             <NewsletterForm onSubmit={handleNewsletterSubmit}>
-              <NewsletterInput 
-                type="email" 
+              <NewsletterInput
+                type="email"
                 placeholder="Enter your email"
                 required
               />
@@ -322,7 +331,7 @@ const Footer = () => {
               <a href="/terms" style={{ color: 'inherit' }}>Terms of Service</a>
             </div>
           </div>
-          
+
           <PaymentMethods>
             <span>We Accept:</span>
             <PaymentIcon>VISA</PaymentIcon>

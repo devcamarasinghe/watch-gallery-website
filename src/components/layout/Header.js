@@ -191,11 +191,17 @@ const Header = () => {
           Watch<span>Shop</span>
         </Logo>
 
-        {/* Navigation */}
+
         <Navigation isOpen={isMenuOpen}>
-          <NavLink href="/">Home</NavLink>
-          <NavLink href="/catalog">Catalog</NavLink>
-          <NavLink href="/brands">Brands</NavLink>
+          <NavLink onClick={() => { window.navigateTo('catalog'); setIsMenuOpen(false); }}>
+            Home
+          </NavLink>
+          <NavLink onClick={() => { window.navigateTo('catalog'); setIsMenuOpen(false); }}>
+            Catalog
+          </NavLink>
+          <NavLink href="#" onClick={(e) => e.preventDefault()}>
+            Brands
+          </NavLink>
 
           {/* Gender Filter Dropdown */}
           <GenderFilter
@@ -208,9 +214,14 @@ const Header = () => {
             <option value="unisex">Unisex</option>
           </GenderFilter>
 
-          <NavLink href="/about">About</NavLink>
-          <NavLink href="/contact">Contact</NavLink>
+          <NavLink onClick={() => { window.navigateTo('about'); setIsMenuOpen(false); }}>
+            About
+          </NavLink>
+          <NavLink onClick={() => { window.navigateTo('contact'); setIsMenuOpen(false); }}>
+            Contact
+          </NavLink>
         </Navigation>
+
 
         {/* Search Bar */}
         <SearchContainer>
