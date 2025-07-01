@@ -230,7 +230,6 @@ const Footer = () => {
             <h3>Quick Links</h3>
             <FooterLinks>
               <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Home</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>All Watches</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Men's Watches</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Women's Watches</a></li>
               <li><a href="#" onClick={(e) => e.preventDefault()}>Brands</a></li>

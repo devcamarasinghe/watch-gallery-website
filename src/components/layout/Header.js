@@ -329,23 +329,22 @@ const Header = ({ onAuthModalOpen }) => {
           <NavLink onClick={() => { window.navigateTo && window.navigateTo('catalog'); setIsMenuOpen(false); }}>
             Home
           </NavLink>
-          <NavLink onClick={() => { window.navigateTo && window.navigateTo('catalog'); setIsMenuOpen(false); }}>
-            Catalog
-          </NavLink>
 
+          {/* Gender Filter Dropdown - this serves as the main product navigation */}
           <GenderFilter
             value={selectedGender}
             onChange={(e) => setGender(e.target.value)}
           >
-            <option value="all">All Watches</option>
+            <option value="all">Shop All</option>
             <option value="men">Men's Watches</option>
             <option value="women">Women's Watches</option>
-            <option value="unisex">Unisex</option>
+            <option value="unisex">Unisex Watches</option>
           </GenderFilter>
 
           <NavLink onClick={() => { window.navigateTo && window.navigateTo('about'); setIsMenuOpen(false); }}>
             About
           </NavLink>
+
           <NavLink onClick={() => { window.navigateTo && window.navigateTo('contact'); setIsMenuOpen(false); }}>
             Contact
           </NavLink>
