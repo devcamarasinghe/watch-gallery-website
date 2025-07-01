@@ -6,6 +6,7 @@ import { FilterProvider } from './context/FilterContext';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { OrdersProvider } from './context/OrdersContext';
+import { PreOrderProvider } from './context/PreOrderContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import CartDropdown from './components/cart/CartDropdown';
@@ -28,28 +29,30 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <OrdersProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <FilterProvider>
-                <div className="App">
-                  <Header onAuthModalOpen={handleAuthModalOpen} />
-                  <Router
-                    products={sampleProducts}
-                    onAuthModalOpen={handleAuthModalOpen}
-                  />
-                  <Footer />
-                  <CartDropdown />
-                  <AuthModal
-                    isOpen={authModal.isOpen}
-                    onClose={handleAuthModalClose}
-                    initialMode={authModal.mode}
-                  />
-                </div>
-              </FilterProvider>
-            </CartProvider>
-          </WishlistProvider>
-        </OrdersProvider>
+        <PreOrderProvider>
+          <OrdersProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <FilterProvider>
+                  <div className="App">
+                    <Header onAuthModalOpen={handleAuthModalOpen} />
+                    <Router
+                      products={sampleProducts}
+                      onAuthModalOpen={handleAuthModalOpen}
+                    />
+                    <Footer />
+                    <CartDropdown />
+                    <AuthModal
+                      isOpen={authModal.isOpen}
+                      onClose={handleAuthModalClose}
+                      initialMode={authModal.mode}
+                    />
+                  </div>
+                </FilterProvider>
+              </CartProvider>
+            </WishlistProvider>
+          </OrdersProvider>
+        </PreOrderProvider>
       </AuthProvider>
     </ThemeProvider>
   );

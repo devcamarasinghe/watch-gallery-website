@@ -1,7 +1,7 @@
 // src/components/product/ProductCard.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FiHeart, FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 
@@ -260,7 +260,7 @@ const StarRating = styled.div`
   gap: 0.2rem;
 `;
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onPreOrderClick }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
@@ -288,6 +288,11 @@ const ProductCard = ({ product }) => {
     } else {
       addToWishlist(product);
     }
+  };
+
+  const handlePreOrder = (e) => {
+    e.stopPropagation();
+    onPreOrderClick(product); // Pass product to parent
   };
 
   const handleQuickView = (e) => {
@@ -392,14 +397,27 @@ const ProductCard = ({ product }) => {
         {/* This spacer will push the button to the bottom */}
         <CardSpacer />
 
-        <AddToCartButton
-          onClick={handleAddToCart}
-          disabled={!inStock}
-        >
-          <FiShoppingCart />
-          {inStock ? 'Add to Cart' : 'Out of Stock'}
-        </AddToCartButton>
+        {product.inStock ? (
+          <AddToCartButton
+            onClick={handleAddToCart}
+          >
+            <FiShoppingCart />
+            Add to Cart
+          </AddToCartButton>
+        ) : (
+          <AddToCartButton
+            onClick={handlePreOrder}
+            style={{
+              background: '#F59E0B', // Orange color for pre-order
+              '&:hover': { background: '#D97706' }
+            }}
+          >
+            <FiPackage />
+            Pre-Order
+          </AddToCartButton>
+        )}
       </CardContent>
+
     </CardContainer>
   );
 

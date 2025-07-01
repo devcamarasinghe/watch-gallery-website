@@ -6,6 +6,7 @@ import FilterSidebar from '../components/product/FilterSidebar';
 import ProductGrid from '../components/product/ProductGrid';
 import { useProductFilter } from '../hooks/useProductFilter';
 import { useFilter } from '../context/FilterContext';
+import PreOrderModal from '../components/product/PreOrderModal';
 
 // Update the CatalogContainer and layout:
 
@@ -144,77 +145,98 @@ const ClearFiltersButton = styled.button`
 const CatalogPage = ({ products }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
-  
+  const [preOrderModal, setPreOrderModal] = useState({ isOpen: false, product: null });
+
   const { sortBy, setSortBy, resetFilters } = useFilter();
   const filteredProducts = useProductFilter(products);
-  
+
   // Get unique brands for filter
   const brands = [...new Set(products.map(product => product.brand))].sort();
 
+  // Add this handler
+  const handlePreOrderClick = (product) => {
+    setPreOrderModal({ isOpen: true, product });
+  };
+
+  const handlePreOrderClose = () => {
+    setPreOrderModal({ isOpen: false, product: null });
+  };
+
   return (
-    <CatalogContainer>
-      <Sidebar>
-        <FilterSidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-          brands={brands}
-        />
-      </Sidebar>
-      
-      <MainContent>
-        <CatalogHeader>
-          <ResultsInfo>
-            <h2>Watch Collection</h2>
-            <p>{filteredProducts.length} watches found</p>
-          </ResultsInfo>
-          
-          <CatalogControls>
-            <FilterButton onClick={() => setIsSidebarOpen(true)}>
-              <FiFilter />
-              Filters
-            </FilterButton>
-            
-            <SortSelect
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="featured">Featured</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
-              <option value="newest">Newest</option>
-            </SortSelect>
-            
-            <ViewToggle>
-              <ViewButton
-                active={viewMode === 'grid'}
-                onClick={() => setViewMode('grid')}
+    <>
+      <CatalogContainer>
+        <Sidebar>
+          <FilterSidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            brands={brands}
+          />
+        </Sidebar>
+
+        <MainContent>
+          <CatalogHeader>
+            <ResultsInfo>
+              <h2>Watch Collection</h2>
+              <p>{filteredProducts.length} watches found</p>
+            </ResultsInfo>
+
+            <CatalogControls>
+              <FilterButton onClick={() => setIsSidebarOpen(true)}>
+                <FiFilter />
+                Filters
+              </FilterButton>
+
+              <SortSelect
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
               >
-                <FiGrid />
-              </ViewButton>
-              <ViewButton
-                active={viewMode === 'list'}
-                onClick={() => setViewMode('list')}
-              >
-                <FiList />
-              </ViewButton>
-            </ViewToggle>
-          </CatalogControls>
-        </CatalogHeader>
-        
-        {filteredProducts.length > 0 ? (
-          <ProductGrid products={filteredProducts} />
-        ) : (
-          <NoResults>
-            <h3>No watches found</h3>
-            <p>Try adjusting your filters to see more results</p>
-            <ClearFiltersButton onClick={resetFilters}>
-              Clear All Filters
-            </ClearFiltersButton>
-          </NoResults>
-        )}
-      </MainContent>
-    </CatalogContainer>
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest</option>
+              </SortSelect>
+
+              <ViewToggle>
+                <ViewButton
+                  active={viewMode === 'grid'}
+                  onClick={() => setViewMode('grid')}
+                >
+                  <FiGrid />
+                </ViewButton>
+                <ViewButton
+                  active={viewMode === 'list'}
+                  onClick={() => setViewMode('list')}
+                >
+                  <FiList />
+                </ViewButton>
+              </ViewToggle>
+            </CatalogControls>
+          </CatalogHeader>
+
+          {filteredProducts.length > 0 ? (
+            <ProductGrid products={filteredProducts}
+              onPreOrderClick={handlePreOrderClick}
+            />
+          ) : (
+            <NoResults>
+              <h3>No watches found</h3>
+              <p>Try adjusting your filters to see more results</p>
+              <ClearFiltersButton onClick={resetFilters}>
+                Clear All Filters
+              </ClearFiltersButton>
+            </NoResults>
+          )}
+        </MainContent>
+      </CatalogContainer>
+      {/* Add PreOrderModal at the end, outside the main container */}
+      <PreOrderModal
+        isOpen={preOrderModal.isOpen}
+        onClose={handlePreOrderClose}
+        product={preOrderModal.product}
+      />
+
+    </>
   );
 };
 
