@@ -1,4 +1,3 @@
-// src/data/products.js
 export const sampleProducts = [
   {
     id: 1,
@@ -92,7 +91,7 @@ export const sampleProducts = [
     badges: [{ type: "new", text: "New" }],
     inStock: true
   },
-    {
+  {
     id: 7,
     name: "Luxury Diamond Bezel Watch",
     brand: "Prestige",
@@ -178,6 +177,90 @@ export const sampleProducts = [
     reviewCount: 89,
     gender: "women",
     badges: [],
+    inStock: true
+  },
+  {
+    id: 13,
+    name: "Chronograph Racing Watch",
+    brand: "SpeedTime",
+    price: 349,
+    originalPrice: 449,
+    discount: 22,
+    images: [],
+    rating: 4.4,
+    reviewCount: 167,
+    gender: "men",
+    badges: [{ type: "sale", text: "Sale" }],
+    inStock: true
+  },
+  {
+    id: 14,
+    name: "Elegant Pearl Dial Watch",
+    brand: "LuxuryFem",
+    price: 279,
+    originalPrice: null,
+    discount: 0,
+    images: [],
+    rating: 4.7,
+    reviewCount: 93,
+    gender: "women",
+    badges: [{ type: "new", text: "New" }],
+    inStock: true
+  },
+  {
+    id: 15,
+    name: "Titanium Sport Watch",
+    brand: "TechSport",
+    price: 199,
+    originalPrice: 259,
+    discount: 23,
+    images: [],
+    rating: 4.3,
+    reviewCount: 201,
+    gender: "unisex",
+    badges: [],
+    inStock: false
+  },
+  {
+    id: 16,
+    name: "Classic Dress Watch",
+    brand: "Formal",
+    price: 159,
+    originalPrice: null,
+    discount: 0,
+    images: [],
+    rating: 4.1,
+    reviewCount: 78,
+    gender: "men",
+    badges: [],
+    inStock: true
+  },
+  {
+    id: 17,
+    name: "Diamond Accent Watch",
+    brand: "Sparkle",
+    price: 599,
+    originalPrice: 799,
+    discount: 25,
+    images: [],
+    rating: 4.8,
+    reviewCount: 156,
+    gender: "women",
+    badges: [{ type: "limited", text: "Limited" }],
+    inStock: true
+  },
+  {
+    id: 18,
+    name: "Smart Hybrid Watch",
+    brand: "TechTime",
+    price: 299,
+    originalPrice: null,
+    discount: 0,
+    images: [],
+    rating: 4.5,
+    reviewCount: 234,
+    gender: "unisex",
+    badges: [{ type: "new", text: "New" }],
     inStock: true
   }
 ];

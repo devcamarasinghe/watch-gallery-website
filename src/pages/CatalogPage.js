@@ -8,6 +8,8 @@ import { useProductFilter } from '../hooks/useProductFilter';
 import { useFilter } from '../context/FilterContext';
 import PreOrderModal from '../components/product/PreOrderModal';
 import QuickViewModal from '../components/product/QuickViewModal';
+import Pagination from '../components/common/Pagination';
+import { usePaginatedProducts } from '../hooks/usePaginatedProducts';
 
 // Update the layout to give more space to products:
 
@@ -183,6 +185,8 @@ const CatalogPage = ({ products }) => {
   const { sortBy, setSortBy, resetFilters } = useFilter();
   const filteredProducts = useProductFilter(products);
 
+  const { paginatedProducts } = usePaginatedProducts(filteredProducts);
+
   // Get unique brands for filter
   const brands = [...new Set(products.map(product => product.brand))].sort();
 
@@ -263,12 +267,15 @@ const CatalogPage = ({ products }) => {
           </CatalogHeader>
 
           {filteredProducts.length > 0 ? (
-            <ProductGrid 
-              products={filteredProducts} 
-              onPreOrderClick={handlePreOrderClick}
-              onQuickViewClick={handleQuickViewClick}
-              viewMode={viewMode} // Pass the viewMode prop
-            />
+            <>
+              <ProductGrid
+                products={paginatedProducts}
+                onPreOrderClick={handlePreOrderClick}
+                onQuickViewClick={handleQuickViewClick}
+                viewMode={viewMode} // Pass the viewMode prop
+              />
+              <Pagination />
+            </>
           ) : (
             <NoResults>
               <h3>No watches found</h3>
