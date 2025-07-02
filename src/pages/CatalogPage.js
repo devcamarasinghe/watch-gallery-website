@@ -24,6 +24,63 @@ const CatalogContainer = styled.div`
   }
 `;
 
+const CatalogControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+`;
+
+const ViewModeIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: ${props => props.theme.colors.textMuted};
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    display: none;
+  }
+`;
+
+const ViewButton = styled.button`
+  padding: 0.7rem 1rem;
+  background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.background};
+  color: ${props => props.active ? props.theme.colors.background : props.theme.colors.text};
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  min-width: 44px;
+  
+  &:hover {
+    background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.backgroundSecondary};
+  }
+  
+  &:first-child {
+    border-right: 1px solid ${props => props.theme.colors.border};
+  }
+  
+  svg {
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover svg {
+    transform: scale(1.1);
+  }
+`;
+
+const ViewToggle = styled.div`
+  display: flex;
+  border: 2px solid ${props => props.theme.colors.border};
+  border-radius: 8px;
+  overflow: hidden;
+  background: ${props => props.theme.colors.background};
+`;
+
 const Sidebar = styled.aside`
   flex: 0 0 200px; // Reduced from 240px
   
@@ -60,12 +117,6 @@ const ResultsInfo = styled.div`
   }
 `;
 
-const CatalogControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
 const SortSelect = styled.select`
   padding: 0.6rem 1rem;
   border: 1px solid ${props => props.theme.colors.border};
@@ -94,26 +145,6 @@ const FilterButton = styled.button`
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     display: flex;
-  }
-`;
-
-const ViewToggle = styled.div`
-  display: flex;
-  border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 6px;
-  overflow: hidden;
-`;
-
-const ViewButton = styled.button`
-  padding: 0.6rem;
-  background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.background};
-  color: ${props => props.active ? props.theme.colors.background : props.theme.colors.text};
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.backgroundSecondary};
   }
 `;
 
@@ -207,27 +238,36 @@ const CatalogPage = ({ products }) => {
                 <option value="newest">Newest</option>
               </SortSelect>
 
+              <ViewModeIndicator>
+                View:
+              </ViewModeIndicator>
+
               <ViewToggle>
                 <ViewButton
                   active={viewMode === 'grid'}
                   onClick={() => setViewMode('grid')}
+                  title="Grid View"
                 >
                   <FiGrid />
                 </ViewButton>
                 <ViewButton
                   active={viewMode === 'list'}
                   onClick={() => setViewMode('list')}
+                  title="List View"
                 >
                   <FiList />
                 </ViewButton>
               </ViewToggle>
             </CatalogControls>
+
           </CatalogHeader>
 
           {filteredProducts.length > 0 ? (
-            <ProductGrid products={filteredProducts}
+            <ProductGrid 
+              products={filteredProducts} 
               onPreOrderClick={handlePreOrderClick}
-              onQuickViewClick={handleQuickViewClick} // Add this prop
+              onQuickViewClick={handleQuickViewClick}
+              viewMode={viewMode} // Pass the viewMode prop
             />
           ) : (
             <NoResults>

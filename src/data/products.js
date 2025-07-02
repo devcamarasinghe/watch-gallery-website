@@ -44,7 +44,7 @@ export const sampleProducts = [
       "/images/watches/watch-2/side.jpg",
       "/images/watches/watch-2/back.jpg"
     ],
-    rating: 4.2,
+    rating: 1.2,
     reviewCount: 256,
     gender: "unisex",
     badges: [{ type: "limited", text: "Limited" }],
