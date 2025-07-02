@@ -20,14 +20,15 @@ const GridContainer = styled.div`
   }
 `;
 
-const ProductGrid = ({ products, onPreOrderClick }) => {
+const ProductGrid = ({ products, onPreOrderClick, onQuickViewClick }) => {
   return (
     <GridContainer>
       {products.map(product => (
-        <ProductCard 
-          key={product.id} 
-          product={product} 
+        <ProductCard
+          key={product.id}
+          product={product}
           onPreOrderClick={onPreOrderClick}
+          onQuickViewClick={onQuickViewClick} // Add this prop
         />
       ))}
     </GridContainer>

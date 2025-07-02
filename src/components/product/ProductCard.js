@@ -448,7 +448,7 @@ const CardSpacer = styled.div`
   flex-grow: 1;
 `;
 
-const ProductCard = ({ product, onPreOrderClick }) => {
+const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -482,7 +482,7 @@ const ProductCard = ({ product, onPreOrderClick }) => {
 
   const handleQuickView = (e) => {
     e.stopPropagation();
-    console.log('Quick view for product:', id);
+    onQuickViewClick(product); // Pass product to parent
   };
 
   const handleAddToCart = (e) => {

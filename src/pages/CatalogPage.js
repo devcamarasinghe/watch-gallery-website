@@ -7,6 +7,7 @@ import ProductGrid from '../components/product/ProductGrid';
 import { useProductFilter } from '../hooks/useProductFilter';
 import { useFilter } from '../context/FilterContext';
 import PreOrderModal from '../components/product/PreOrderModal';
+import QuickViewModal from '../components/product/QuickViewModal';
 
 // Update the layout to give more space to products:
 
@@ -146,12 +147,21 @@ const CatalogPage = ({ products }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [preOrderModal, setPreOrderModal] = useState({ isOpen: false, product: null });
+  const [quickViewModal, setQuickViewModal] = useState({ isOpen: false, product: null }); // Add this state
 
   const { sortBy, setSortBy, resetFilters } = useFilter();
   const filteredProducts = useProductFilter(products);
 
   // Get unique brands for filter
   const brands = [...new Set(products.map(product => product.brand))].sort();
+
+  const handleQuickViewClick = (product) => {
+    setQuickViewModal({ isOpen: true, product });
+  };
+
+  const handleQuickViewClose = () => {
+    setQuickViewModal({ isOpen: false, product: null });
+  };
 
   // Add this handler
   const handlePreOrderClick = (product) => {
@@ -217,6 +227,7 @@ const CatalogPage = ({ products }) => {
           {filteredProducts.length > 0 ? (
             <ProductGrid products={filteredProducts}
               onPreOrderClick={handlePreOrderClick}
+              onQuickViewClick={handleQuickViewClick} // Add this prop
             />
           ) : (
             <NoResults>
@@ -234,6 +245,13 @@ const CatalogPage = ({ products }) => {
         isOpen={preOrderModal.isOpen}
         onClose={handlePreOrderClose}
         product={preOrderModal.product}
+      />
+
+      <QuickViewModal
+        isOpen={quickViewModal.isOpen}
+        onClose={handleQuickViewClose}
+        product={quickViewModal.product}
+        onPreOrderClick={handlePreOrderClick}
       />
 
     </>
