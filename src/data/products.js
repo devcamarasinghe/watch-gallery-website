@@ -262,5 +262,47 @@ export const sampleProducts = [
     gender: "unisex",
     badges: [{ type: "new", text: "New" }],
     inStock: true
-  }
+  },
+  {
+    id: 19,
+    name: "Test Watch 1",
+    brand: "TestBrand",
+    price: 100,
+    originalPrice: null,
+    discount: 0,
+    images: [],
+    rating: 4.0,
+    reviewCount: 50,
+    gender: "men",
+    badges: [],
+    inStock: true
+  },
+  {
+    id: 20,
+    name: "Test Watch 2",
+    brand: "TestBrand",
+    price: 150,
+    originalPrice: null,
+    discount: 0,
+    images: [],
+    rating: 4.2,
+    reviewCount: 75,
+    gender: "women",
+    badges: [],
+    inStock: true
+  },
+  ...Array.from({ length: 100 }, (_, i) => ({
+    id: 21 + i,
+    name: `Test Watch ${3 + i}`,
+    brand: "TestBrand",
+    price: 100 + (i * 10),
+    originalPrice: null,
+    discount: 0,
+    images: [],
+    rating: 4.0 + (i * 0.1),
+    reviewCount: 50 + (i * 10),
+    gender: i % 2 === 0 ? "men" : "women",
+    badges: [],
+    inStock: true
+  }))
 ];
