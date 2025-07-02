@@ -48,7 +48,7 @@ export const sampleProducts = [
     reviewCount: 256,
     gender: "unisex",
     badges: [{ type: "limited", text: "Limited" }],
-    inStock: true
+    inStock: false
   },
   {
     id: 4,

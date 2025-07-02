@@ -1,6 +1,6 @@
 // src/components/product/QuickViewModal.js
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import {
   FiX,
   FiHeart,
@@ -40,8 +40,8 @@ const ModalContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   animation: ${slideUp} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex; // Add this
-  flex-direction: column; // Add this
+  display: flex;
+  flex-direction: column;
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     max-height: 95vh;

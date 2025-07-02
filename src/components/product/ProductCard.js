@@ -1,6 +1,6 @@
 // src/components/product/ProductCard.js
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -41,7 +41,7 @@ const fadeIn = keyframes`
 
 // Update CardContent padding for larger cards:
 const CardContent = styled.div`
-  padding: 1.8rem; // Increased from 1.5rem
+  padding: 1.8rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -316,19 +316,19 @@ const Badge = styled.span`
   letter-spacing: 0.5px;
   animation: ${slideIn} 0.5s ease;
   
-  ${props => props.type === 'sale' && `
+  ${props => props.type === 'sale' && css`
     background: linear-gradient(135deg, ${props.theme.colors.error} 0%, #c53030 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
   `}
   
-  ${props => props.type === 'new' && `
+  ${props => props.type === 'new' && css`
     background: linear-gradient(135deg, ${props.theme.colors.success} 0%, #38a169 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   `}
   
-  ${props => props.type === 'limited' && `
+  ${props => props.type === 'limited' && css`
     background: linear-gradient(135deg, ${props.theme.colors.secondary} 0%, #b8941f 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
@@ -356,7 +356,7 @@ const ActionButton = styled.button`
     transform: scale(1.1);
   }
   
-  ${props => props.active && `
+  ${props => props.active && css`
     background: ${props.theme.colors.error};
     color: white;
     animation: ${pulse} 0.6s ease;
@@ -597,12 +597,12 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
         )}
 
         <ActionButtons className="action-buttons">
-          <ActionButton
+          {/* <ActionButton
             onClick={handleQuickView}
             title="Quick View"
           >
             <FiEye />
-          </ActionButton>
+          </ActionButton> */}
           <ActionButton
             onClick={handleWishlistToggle}
             active={isWishlisted}
