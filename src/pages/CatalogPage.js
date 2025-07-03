@@ -10,6 +10,9 @@ import PreOrderModal from '../components/product/PreOrderModal';
 import QuickViewModal from '../components/product/QuickViewModal';
 import Pagination from '../components/common/Pagination';
 import { usePaginatedProducts } from '../hooks/usePaginatedProducts';
+import { PaginationProvider } from '../context/PaginationContext';
+
+console.log('🔍 CatalogPage.js loaded');
 
 // Update the layout to give more space to products:
 
@@ -176,7 +179,7 @@ const ClearFiltersButton = styled.button`
   font-weight: 600;
 `;
 
-const CatalogPage = ({ products }) => {
+const CatalogPageContent = ({ products }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [preOrderModal, setPreOrderModal] = useState({ isOpen: false, product: null });
@@ -186,6 +189,8 @@ const CatalogPage = ({ products }) => {
   const filteredProducts = useProductFilter(products);
 
   const { paginatedProducts } = usePaginatedProducts(filteredProducts);
+
+  console.log('🔍 CatalogPage rendering with products:', products.length);
 
   // Get unique brands for filter
   const brands = [...new Set(products.map(product => product.brand))].sort();
@@ -267,7 +272,7 @@ const CatalogPage = ({ products }) => {
           </CatalogHeader>
 
           {filteredProducts.length > 0 ? (
-            <>
+            <div>
               <ProductGrid
                 products={paginatedProducts}
                 onPreOrderClick={handlePreOrderClick}
@@ -275,7 +280,7 @@ const CatalogPage = ({ products }) => {
                 viewMode={viewMode} // Pass the viewMode prop
               />
               <Pagination />
-            </>
+            </div>
           ) : (
             <NoResults>
               <h3>No watches found</h3>
@@ -302,6 +307,15 @@ const CatalogPage = ({ products }) => {
       />
 
     </>
+  );
+};
+
+// Main component with PaginationProvider wrapper
+const CatalogPage = ({ products }) => {
+  return (
+    <PaginationProvider>
+      <CatalogPageContent products={products} />
+    </PaginationProvider>
   );
 };
 

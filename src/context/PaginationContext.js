@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 
 const PaginationContext = createContext();
 
@@ -21,7 +21,7 @@ const paginationReducer = (state, action) => {
       return {
         ...state,
         itemsPerPage: action.payload,
-        currentPage: 1 // Reset to first page when changing items per page
+        currentPage: 1
       };
     
     case 'SET_TOTAL_ITEMS':
@@ -36,7 +36,7 @@ const paginationReducer = (state, action) => {
     case 'RESET_PAGINATION':
       return {
         ...initialState,
-        itemsPerPage: state.itemsPerPage // Keep the selected items per page
+        itemsPerPage: state.itemsPerPage
       };
     
     default:
@@ -83,28 +83,29 @@ export const PaginationProvider = ({ children }) => {
     setCurrentPage(state.totalPages);
   };
 
-  // Calculate pagination data
   const startIndex = (state.currentPage - 1) * state.itemsPerPage;
   const endIndex = startIndex + state.itemsPerPage;
   const hasNextPage = state.currentPage < state.totalPages;
   const hasPrevPage = state.currentPage > 1;
 
+  const contextValue = {
+    ...state,
+    setCurrentPage,
+    setItemsPerPage,
+    setTotalItems,
+    resetPagination,
+    goToNextPage,
+    goToPrevPage,
+    goToFirstPage,
+    goToLastPage,
+    startIndex,
+    endIndex,
+    hasNextPage,
+    hasPrevPage
+  };
+
   return (
-    <PaginationContext.Provider value={{
-      ...state,
-      setCurrentPage,
-      setItemsPerPage,
-      setTotalItems,
-      resetPagination,
-      goToNextPage,
-      goToPrevPage,
-      goToFirstPage,
-      goToLastPage,
-      startIndex,
-      endIndex,
-      hasNextPage,
-      hasPrevPage
-    }}>
+    <PaginationContext.Provider value={contextValue}>
       {children}
     </PaginationContext.Provider>
   );
@@ -112,6 +113,7 @@ export const PaginationProvider = ({ children }) => {
 
 export const usePagination = () => {
   const context = useContext(PaginationContext);
+  
   if (!context) {
     throw new Error('usePagination must be used within a PaginationProvider');
   }

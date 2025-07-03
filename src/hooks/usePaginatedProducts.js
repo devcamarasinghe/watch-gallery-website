@@ -8,19 +8,13 @@ export const usePaginatedProducts = (products) => {
     itemsPerPage,
     startIndex,
     endIndex,
-    setTotalItems,
-    resetPagination
+    setTotalItems
   } = usePagination();
 
   // Update total items when products change
   useEffect(() => {
     setTotalItems(products.length);
   }, [products.length, setTotalItems]);
-
-  // Reset pagination when products array changes significantly
-  useEffect(() => {
-    resetPagination();
-  }, [products.length, resetPagination]);
 
   // Get paginated products
   const paginatedProducts = useMemo(() => {
