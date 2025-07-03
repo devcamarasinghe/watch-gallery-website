@@ -1,5 +1,5 @@
 // src/components/product/ProductCardList.js
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
@@ -302,8 +302,8 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   // Use the useInventory hook for stock management
   const {
-    availableQuantity,
-    remainingQuantity,
+    // availableQuantity,
+    // remainingQuantity,
     isOutOfStock,
     getStockStatus,
     canAddToCart,
@@ -322,7 +322,7 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
     reviewCount = 0,
     gender,
     badges = [],
-    inStock = true
+    // inStock = true
   } = product;
 
   const handleWishlistToggle = (e) => {
