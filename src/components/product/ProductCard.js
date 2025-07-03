@@ -4,6 +4,8 @@ import styled, { keyframes, css } from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useInventory } from '../../hooks/useInventory';
+import StockStatus from '../common/StockStatus';
 
 const ActionButtons = styled.div`
   position: absolute;
@@ -457,6 +459,18 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const images = product.images || [];
   const hasImages = images.length > 0;
 
+
+  // Add inventory hook
+  const {
+    availableQuantity,
+    remainingQuantity,
+    isOutOfStock,
+    getStockStatus,
+    canAddToCart
+  } = useInventory(product);
+
+  const stockStatus = getStockStatus();
+
   const {
     id,
     name,
@@ -487,9 +501,11 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    if (inStock) {
+    if (canAddToCart(1)) {
       addToCart(product, 1);
-      console.log(`Added ${name} to cart`);
+      console.log(`Added ${product.name} to cart`);
+    } else {
+      alert('Sorry, this item is out of stock or you have reached the maximum available quantity.');
     }
   };
 
@@ -621,6 +637,12 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
         <ProductBrand>{brand}</ProductBrand>
         <ProductName>{name}</ProductName>
 
+        <StockStatus
+          status={stockStatus.status}
+          label={stockStatus.label}
+          showIcon={true}
+        />
+
         {rating > 0 ? (
           <RatingContainer>
             <StarRating>
@@ -635,21 +657,24 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
         <GenderTag>{gender}</GenderTag>
 
         <PriceContainer>
-          <CurrentPrice>${price}</CurrentPrice>
-          {originalPrice && originalPrice > price && (
+          <CurrentPrice>${product.price}</CurrentPrice>
+          {product.originalPrice && product.originalPrice > product.price && (
             <>
-              <OriginalPrice>${originalPrice}</OriginalPrice>
-              <Discount>-{discount}%</Discount>
+              <OriginalPrice>${product.originalPrice}</OriginalPrice>
+              <Discount>-{product.discount}%</Discount>
             </>
           )}
         </PriceContainer>
 
         <CardSpacer />
 
-        {inStock ? (
-          <AddToCartButton onClick={handleAddToCart}>
+        {!isOutOfStock ? (
+          <AddToCartButton
+            onClick={handleAddToCart}
+            disabled={!canAddToCart(1)}
+          >
             <FiShoppingCart />
-            Add to Cart
+            {canAddToCart(1) ? 'Add to Cart' : 'Max Quantity Reached'}
           </AddToCartButton>
         ) : (
           <AddToCartButton

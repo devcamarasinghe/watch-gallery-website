@@ -15,7 +15,8 @@ export const sampleProducts = [
     reviewCount: 128,
     gender: "men",
     badges: [{ type: "sale", text: "Sale" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 15 // Add this field
   },
   {
     id: 2,
@@ -29,7 +30,8 @@ export const sampleProducts = [
     reviewCount: 89,
     gender: "women",
     badges: [{ type: "new", text: "New" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 15 // Add this field
   },
   {
     id: 3,
@@ -47,7 +49,8 @@ export const sampleProducts = [
     reviewCount: 256,
     gender: "unisex",
     badges: [{ type: "limited", text: "Limited" }],
-    inStock: false
+    inStock: true,
+    availableQuantity: 4 // Add this field
   },
   {
     id: 4,
@@ -61,7 +64,8 @@ export const sampleProducts = [
     reviewCount: 67,
     gender: "men",
     badges: [],
-    inStock: false
+    inStock: true,
+    availableQuantity: 2 // Add this field
   },
   {
     id: 5,
@@ -75,7 +79,8 @@ export const sampleProducts = [
     reviewCount: 145,
     gender: "women",
     badges: [{ type: "sale", text: "Sale" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 10 // Add this field
   },
   {
     id: 6,
@@ -89,7 +94,8 @@ export const sampleProducts = [
     reviewCount: 312,
     gender: "unisex",
     badges: [{ type: "new", text: "New" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 1 // Add this field
   },
   {
     id: 7,
@@ -107,7 +113,8 @@ export const sampleProducts = [
     reviewCount: 78,
     gender: "women",
     badges: [{ type: "limited", text: "Limited" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 19 // Add this field
   },
   {
     id: 8,
@@ -121,7 +128,8 @@ export const sampleProducts = [
     reviewCount: 203,
     gender: "men",
     badges: [],
-    inStock: true
+    inStock: true,
+    availableQuantity: 19 // Add this field
   },
   {
     id: 9,
@@ -135,7 +143,8 @@ export const sampleProducts = [
     reviewCount: 445,
     gender: "unisex",
     badges: [{ type: "new", text: "New" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 190 // Add this field
   },
   {
     id: 10,
@@ -149,7 +158,8 @@ export const sampleProducts = [
     reviewCount: 156,
     gender: "women",
     badges: [],
-    inStock: false
+    inStock: true,
+    availableQuantity: 6 // Add this field
   },
   {
     id: 11,
@@ -163,7 +173,8 @@ export const sampleProducts = [
     reviewCount: 334,
     gender: "men",
     badges: [{ type: "sale", text: "Sale" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 190 // Add this field
   },
   {
     id: 12,
@@ -177,7 +188,8 @@ export const sampleProducts = [
     reviewCount: 89,
     gender: "women",
     badges: [],
-    inStock: true
+    inStock: true,
+    availableQuantity: 5 // Add this field
   },
   {
     id: 13,
@@ -191,7 +203,8 @@ export const sampleProducts = [
     reviewCount: 167,
     gender: "men",
     badges: [{ type: "sale", text: "Sale" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 5 // Add this field
   },
   {
     id: 14,
@@ -205,7 +218,8 @@ export const sampleProducts = [
     reviewCount: 93,
     gender: "women",
     badges: [{ type: "new", text: "New" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 7 // Add this field
   },
   {
     id: 15,
@@ -219,7 +233,8 @@ export const sampleProducts = [
     reviewCount: 201,
     gender: "unisex",
     badges: [],
-    inStock: false
+    inStock: true,
+    availableQuantity: 99 // Add this field
   },
   {
     id: 16,
@@ -233,7 +248,8 @@ export const sampleProducts = [
     reviewCount: 78,
     gender: "men",
     badges: [],
-    inStock: true
+    inStock: true,
+    availableQuantity: 7 // Add this field
   },
   {
     id: 17,
@@ -247,7 +263,8 @@ export const sampleProducts = [
     reviewCount: 156,
     gender: "women",
     badges: [{ type: "limited", text: "Limited" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 13 // Add this field
   },
   {
     id: 18,
@@ -261,7 +278,8 @@ export const sampleProducts = [
     reviewCount: 234,
     gender: "unisex",
     badges: [{ type: "new", text: "New" }],
-    inStock: true
+    inStock: true,
+    availableQuantity: 13 // Add this field
   },
   {
     id: 19,
@@ -275,7 +293,8 @@ export const sampleProducts = [
     reviewCount: 50,
     gender: "men",
     badges: [],
-    inStock: true
+    inStock: true,
+    availableQuantity: 21 // Add this field
   },
   {
     id: 20,
@@ -289,9 +308,10 @@ export const sampleProducts = [
     reviewCount: 75,
     gender: "women",
     badges: [],
-    inStock: true
+    inStock: true,
+    availableQuantity: 5 // Add this field
   },
-  ...Array.from({ length: 100 }, (_, i) => ({
+  ...Array.from({ length: 50 }, (_, i) => ({
     id: 21 + i,
     name: `Test Watch ${3 + i}`,
     brand: "TestBrand",
@@ -303,6 +323,7 @@ export const sampleProducts = [
     reviewCount: 50 + (i * 10),
     gender: i % 2 === 0 ? "men" : "women",
     badges: [],
-    inStock: true
+    inStock: true,
+    availableQuantity: Math.floor(Math.random() * 20) + 1
   }))
 ];

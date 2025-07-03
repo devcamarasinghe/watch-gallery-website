@@ -16,6 +16,9 @@ import {
 } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import QuantitySelector from '../../components/common/QuantitySelector';
+import StockStatus from '../../components/common/StockStatus';
+import { useInventory } from '../../hooks/useInventory';
 
 // Update these styled components to fix the issues:
 
@@ -361,7 +364,7 @@ const Discount = styled.span`
   border-radius: 16px;
 `;
 
-const StockStatus = styled.div`
+const ProductStockStatus = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -637,6 +640,15 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false)
 
+  const {
+    availableQuantity,
+    remainingQuantity,
+    isOutOfStock,
+    getStockStatus,
+    canAddToCart,
+    getMaxQuantityForCart
+  } = useInventory(product);
+
   if (!isOpen || !product) return null;
 
   const {
@@ -685,9 +697,11 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
   };
 
   const handleAddToCart = () => {
-    if (inStock) {
+    if (canAddToCart(quantity)) {
       addToCart(product, quantity);
       onClose();
+    } else {
+      alert('Sorry, not enough stock available.');
     }
   };
 
@@ -846,9 +860,17 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
                   </>
                 )}
               </PriceContainer>
-              <StockStatus inStock={inStock}>
+
+              <ProductStockStatus inStock={inStock}>
                 {inStock ? '✓ In Stock' : '✗ Out of Stock'}
-              </StockStatus>
+              </ProductStockStatus>
+
+              <StockStatus
+                status={getStockStatus().status}
+                label={getStockStatus().label}
+                showIcon={true}
+              />
+
             </PriceSection>
 
             <ProductDescription>
@@ -885,11 +907,39 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
               </QuantitySection>
             )}
 
+            {!isOutOfStock && (
+              <QuantitySection>
+                <QuantitySelector
+                  value={quantity}
+                  onChange={setQuantity}
+                  min={1}
+                  max={getMaxQuantityForCart()}
+                  availableQuantity={remainingQuantity}
+                  showStockInfo={true}
+                />
+              </QuantitySection>
+            )}
+
             <ActionButtons>
               {inStock ? (
                 <AddToCartButton onClick={handleAddToCart}>
                   <FiShoppingCart />
                   Add to Cart
+                </AddToCartButton>
+              ) : (
+                <AddToCartButton preOrder onClick={handlePreOrder}>
+                  <FiPackage />
+                  Pre-Order
+                </AddToCartButton>
+              )}
+
+              {!isOutOfStock ? (
+                <AddToCartButton
+                  onClick={handleAddToCart}
+                  disabled={!canAddToCart(quantity)}
+                >
+                  <FiShoppingCart />
+                  Add {quantity} to Cart
                 </AddToCartButton>
               ) : (
                 <AddToCartButton preOrder onClick={handlePreOrder}>
