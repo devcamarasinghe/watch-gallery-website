@@ -1,6 +1,6 @@
 // src/components/product/QuickViewModal.js
 import React, { useState } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import {
   FiX,
   FiHeart,
@@ -231,25 +231,25 @@ const NavButton = styled.button`
   }
 `;
 
-const ThumbnailPlaceholder = styled.div`
-  width: 60px;
-  height: 60px;
-  background: ${props => props.theme.colors.backgroundSecondary};
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: ${props => props.theme.colors.textMuted};
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid ${props => props.active ? props.theme.colors.secondary : 'transparent'};
-  
-  &:hover {
-    transform: scale(1.05);
-    border-color: ${props => props.theme.colors.secondary};
-  }
-`;
+// const ThumbnailPlaceholder = styled.div`
+//   width: 60px;
+//   height: 60px;
+//   background: ${props => props.theme.colors.backgroundSecondary};
+//   border-radius: 8px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   font-size: 1.5rem;
+//   color: ${props => props.theme.colors.textMuted};
+//   cursor: pointer;
+//   transition: all 0.3s ease;
+//   border: 2px solid ${props => props.active ? props.theme.colors.secondary : 'transparent'};
+
+//   &:hover {
+//     transform: scale(1.05);
+//     border-color: ${props => props.theme.colors.secondary};
+//   }
+// `;
 
 const BadgeOverlay = styled.div`
   position: absolute;
@@ -364,14 +364,14 @@ const Discount = styled.span`
   border-radius: 16px;
 `;
 
-const ProductStockStatus = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: ${props => props.inStock ? props.theme.colors.success : props.theme.colors.error};
-`;
+// const ProductStockStatus = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 0.5rem;
+//   font-size: 0.9rem;
+//   font-weight: 600;
+//   color: ${props => props.inStock ? props.theme.colors.success : props.theme.colors.error};
+// `;
 
 const ProductDescription = styled.div`
   margin-bottom: 2rem;
@@ -432,44 +432,44 @@ const QuantitySection = styled.div`
   }
 `;
 
-const QuantityControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-`;
+// const QuantityControls = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 1rem;
+//   margin-bottom: 1rem;
+// `;
 
-const QuantityButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border: 1px solid ${props => props.theme.colors.border};
-  background: ${props => props.theme.colors.background};
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: ${props => props.theme.colors.secondary};
-    color: white;
-    border-color: ${props => props.theme.colors.secondary};
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
+// const QuantityButton = styled.button`
+// //   width: 40px;
+// //   height: 40px;
+// //   border: 1px solid ${props => props.theme.colors.border};
+// //   background: ${props => props.theme.colors.background};
+// //   border-radius: 8px;
+// //   display: flex;
+// //   align-items: center;
+// //   justify-content: center;
+// //   cursor: pointer;
+// //   font-weight: 600;
+// //   transition: all 0.3s ease;
 
-const QuantityDisplay = styled.span`
-  min-width: 50px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.2rem;
-`;
+// //   &:hover {
+// //     background: ${props => props.theme.colors.secondary};
+// //     color: white;
+// //     border-color: ${props => props.theme.colors.secondary};
+// //   }
+
+// //   &:disabled {
+// //     opacity: 0.5;
+// //     cursor: not-allowed;
+// //   }
+// // `;
+
+// const QuantityDisplay = styled.span`
+//   min-width: 50px;
+//   text-align: center;
+//   font-weight: 600;
+//   font-size: 1.2rem;
+// `;
 
 const ActionButtons = styled.div`
   display: flex;
@@ -641,7 +641,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
   const [imageError, setImageError] = useState(false)
 
   const {
-    availableQuantity,
+    // availableQuantity,
     remainingQuantity,
     isOutOfStock,
     getStockStatus,
@@ -661,9 +661,9 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
     images = [],
     rating = 0,
     reviewCount = 0,
-    gender,
+    // gender,
     badges = [],
-    inStock = true
+    // inStock = true
   } = product;
 
   const isWishlisted = isInWishlist(id);
@@ -691,10 +691,10 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
     setCurrentImageIndex(index);
   };
 
-  const handleQuantityChange = (change) => {
-    const newQuantity = Math.max(1, quantity + change);
-    setQuantity(newQuantity);
-  };
+  // const handleQuantityChange = (change) => {
+  //   const newQuantity = Math.max(1, quantity + change);
+  //   setQuantity(newQuantity);
+  // };
 
   const handleAddToCart = () => {
     if (canAddToCart(quantity)) {

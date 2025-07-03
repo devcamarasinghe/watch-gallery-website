@@ -4,6 +4,8 @@ import styled, { css } from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useInventory } from '../../hooks/useInventory'; // Import the useInventory hook
+import StockStatus from '../common/StockStatus'; // Import StockStatus component
 
 const ListCardContainer = styled.div`
   background: ${props => props.theme.colors.background};
@@ -293,10 +295,21 @@ const AddToCartButton = styled.button`
 const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  
+
   const isWishlisted = isInWishlist(product.id);
   const images = product.images || [];
   const hasImages = images.length > 0;
+
+  // Use the useInventory hook for stock management
+  const {
+    availableQuantity,
+    remainingQuantity,
+    isOutOfStock,
+    getStockStatus,
+    canAddToCart,
+  } = useInventory(product);
+
+  const stockStatus = getStockStatus();
 
   const {
     id,
@@ -328,9 +341,11 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    if (inStock) {
+    if (canAddToCart(1)) {
       addToCart(product, 1);
-      console.log(`Added ${name} to cart`);
+      console.log(`Added ${product.name} to cart`);
+    } else {
+      alert('Sorry, this item is out of stock or you have reached the maximum available quantity.');
     }
   };
 
@@ -346,7 +361,7 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    
+
     for (let i = 0; i < 5; i++) {
       stars.push(
         <Star key={i} filled={i < fullStars} />
@@ -372,7 +387,7 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
         ) : (
           <ImagePlaceholder>⌚</ImagePlaceholder>
         )}
-        
+
         {badges.length > 0 && (
           <BadgeContainer>
             {badges.map((badge, index) => (
@@ -383,7 +398,7 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
           </BadgeContainer>
         )}
       </ImageSection>
-      
+
       <ContentSection>
         <div>
           <ProductHeader>
@@ -391,7 +406,7 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
             <ProductName>{name}</ProductName>
             <ProductDescription>{productDescription}</ProductDescription>
           </ProductHeader>
-          
+
           {rating > 0 && (
             <RatingContainer>
               <StarRating>
@@ -400,10 +415,10 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
               <ReviewCount>({reviewCount} reviews)</ReviewCount>
             </RatingContainer>
           )}
-          
+
           <GenderTag>{gender}</GenderTag>
         </div>
-        
+
         <ProductFooter>
           <PriceContainer>
             <CurrentPrice>${price}</CurrentPrice>
@@ -414,16 +429,16 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
               </>
             )}
           </PriceContainer>
-          
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <ActionButtons className="action-buttons">
-              <ActionButton 
+              <ActionButton
                 onClick={handleQuickView}
                 title="Quick View"
               >
                 <FiEye />
               </ActionButton>
-              <ActionButton 
+              <ActionButton
                 onClick={handleWishlistToggle}
                 active={isWishlisted}
                 title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
@@ -431,14 +446,16 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
                 <FiHeart />
               </ActionButton>
             </ActionButtons>
-            
-            {inStock ? (
-              <AddToCartButton onClick={handleAddToCart}>
+
+            {!isOutOfStock ? (
+              <AddToCartButton
+                onClick={handleAddToCart}
+                disabled={!canAddToCart(1)}>
                 <FiShoppingCart />
-                Add to Cart
+                {canAddToCart(1) ? 'Add to Cart' : 'Max Quantity Reached'}
               </AddToCartButton>
             ) : (
-              <AddToCartButton 
+              <AddToCartButton
                 preOrder
                 onClick={handlePreOrder}
               >
@@ -448,6 +465,12 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
             )}
           </div>
         </ProductFooter>
+        {/* Display stock status */}
+        <StockStatus
+          status={stockStatus.status}
+          label={stockStatus.label}
+          showIcon={true}
+        />
       </ContentSection>
     </ListCardContainer>
   );

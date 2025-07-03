@@ -1,7 +1,7 @@
 // src/components/product/ProductCard.js
 import React, { useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useInventory } from '../../hooks/useInventory';
@@ -462,8 +462,8 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   // Add inventory hook
   const {
-    availableQuantity,
-    remainingQuantity,
+    // availableQuantity,
+    // remainingQuantity,
     isOutOfStock,
     getStockStatus,
     canAddToCart
@@ -475,14 +475,14 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
     id,
     name,
     brand,
-    price,
-    originalPrice,
-    discount,
+    // price,
+    // originalPrice,
+    // discount,
     rating = 0,
     reviewCount = 0,
     gender,
     badges = [],
-    inStock = true
+    // inStock = true
   } = product;
 
   const handleWishlistToggle = (e) => {
