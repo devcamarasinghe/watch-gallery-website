@@ -647,7 +647,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
     getStockStatus,
     canAddToCart,
     getMaxQuantityForCart
-  } = useInventory(product);
+  } = useInventory(product || {});
 
   if (!isOpen || !product) return null;
 
@@ -861,9 +861,9 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
                 )}
               </PriceContainer>
 
-              <ProductStockStatus inStock={inStock}>
+              {/* <ProductStockStatus inStock={inStock}>
                 {inStock ? '✓ In Stock' : '✗ Out of Stock'}
-              </ProductStockStatus>
+              </ProductStockStatus> */}
 
               <StockStatus
                 status={getStockStatus().status}
@@ -887,7 +887,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
               </FeatureList>
             </ProductFeatures>
 
-            {inStock && (
+            {/* {inStock && (
               <QuantitySection>
                 <h3>Quantity</h3>
                 <QuantityControls>
@@ -905,7 +905,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
                   </QuantityButton>
                 </QuantityControls>
               </QuantitySection>
-            )}
+            )} */}
 
             {!isOutOfStock && (
               <QuantitySection>
@@ -921,7 +921,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
             )}
 
             <ActionButtons>
-              {inStock ? (
+              {/* {inStock ? (
                 <AddToCartButton onClick={handleAddToCart}>
                   <FiShoppingCart />
                   Add to Cart
@@ -931,7 +931,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
                   <FiPackage />
                   Pre-Order
                 </AddToCartButton>
-              )}
+              )} */}
 
               {!isOutOfStock ? (
                 <AddToCartButton

@@ -16,7 +16,7 @@ export const sampleProducts = [
     gender: "men",
     badges: [{ type: "sale", text: "Sale" }],
     inStock: true,
-    availableQuantity: 15 // Add this field
+    availableQuantity: 0 // Add this field
   },
   {
     id: 2,
