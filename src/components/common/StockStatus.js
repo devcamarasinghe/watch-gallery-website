@@ -19,17 +19,17 @@ const StockIcon = styled.div`
   justify-content: center;
   font-size: 0.8rem;
   
-  ${props => props.status === 'in-stock' && `
+  ${props => props.$status === 'in-stock' && `
     background: ${props.theme.colors.success};
     color: white;
   `}
   
-  ${props => props.status === 'low-stock' && `
+  ${props => props.$status === 'low-stock' && `
     background: ${props.theme.colors.warning};
     color: white;
   `}
   
-  ${props => props.status === 'out-of-stock' && `
+  ${props => props.$status === 'out-of-stock' && `
     background: ${props.theme.colors.error};
     color: white;
   `}
@@ -39,15 +39,15 @@ const StockText = styled.span`
   font-size: 0.9rem;
   font-weight: 600;
   
-  ${props => props.status === 'in-stock' && `
+  ${props => props.$status === 'in-stock' && `
     color: ${props.theme.colors.success};
   `}
   
-  ${props => props.status === 'low-stock' && `
+  ${props => props.$status === 'low-stock' && `
     color: ${props.theme.colors.warning};
   `}
   
-  ${props => props.status === 'out-of-stock' && `
+  ${props => props.$status === 'out-of-stock' && `
     color: ${props.theme.colors.error};
   `}
 `;
@@ -69,11 +69,11 @@ const StockStatus = ({ status, label, showIcon = true }) => {
   return (
     <StockContainer>
       {showIcon && (
-        <StockIcon status={status}>
+        <StockIcon $status={status}>
           {getIcon()}
         </StockIcon>
       )}
-      <StockText status={status}>
+      <StockText $status={status}>
         {label}
       </StockText>
     </StockContainer>

@@ -84,16 +84,16 @@ const PaginationButton = styled.button`
   height: 40px;
   padding: 0 0.5rem;
   border: 1px solid ${props => props.theme.colors.border};
-  background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.background};
-  color: ${props => props.active ? props.theme.colors.background : props.theme.colors.text};
+  background: ${props => props.$active ? props.theme.colors.primary : props.theme.colors.background};
+  color: ${props => props.$active ? props.theme.colors.background : props.theme.colors.text};
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: ${props => props.active ? '600' : '500'};
+  font-weight: ${props => props.$active ? '600' : '500'};
   
   &:hover:not(:disabled) {
-    background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.secondary};
-    color: ${props => props.active ? props.theme.colors.background : props.theme.colors.background};
+    background: ${props => props.$active ? props.theme.colors.primary : props.theme.colors.secondary};
+    color: ${props => props.$active ? props.theme.colors.background : props.theme.colors.background};
     border-color: ${props => props.theme.colors.secondary};
     transform: translateY(-1px);
   }
@@ -253,7 +253,7 @@ const Pagination = () => {
                 ) : (
                   <PaginationButton
                     key={page}
-                    active={page === currentPage}
+                    $active={page === currentPage}
                     onClick={() => setCurrentPage(page)}
                     title={`Page ${page}`}
                   >

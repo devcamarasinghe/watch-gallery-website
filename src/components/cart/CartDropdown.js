@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FiX, FiPlus, FiMinus, FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 
-const CartOverlay = styled.div`
+const CartOverlay = styled(({ isOpen, ...props }) => <div {...props} />)`
   position: fixed;
   top: 0;
   left: 0;
@@ -15,7 +15,7 @@ const CartOverlay = styled.div`
   display: ${props => props.isOpen ? 'block' : 'none'};
 `;
 
-const CartContainer = styled.div`
+const CartContainer = styled(({ isOpen, ...props }) => <div {...props} />)`
   position: fixed;
   top: 0;
   right: 0;

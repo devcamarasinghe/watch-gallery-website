@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ThemeProvider from './theme/ThemeProvider';
 import { CartProvider } from './context/CartContext';
 import { FilterProvider } from './context/FilterContext';
@@ -19,13 +19,16 @@ import './App.css';
 function App() {
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' });
 
-  const handleAuthModalOpen = (mode = 'login') => {
-    setAuthModal({ isOpen: true, mode });
-  };
+  // Deep memoization of products
+  const stableProducts = useMemo(() => JSON.parse(JSON.stringify(sampleProducts)), []);
 
-  const handleAuthModalClose = () => {
+  const handleAuthModalOpen = useCallback((mode = 'login') => {
+    setAuthModal({ isOpen: true, mode });
+  }, []);
+
+  const handleAuthModalClose = useCallback(() => {
     setAuthModal({ isOpen: false, mode: 'login' });
-  };
+  }, []);
 
   return (
     <ThemeProvider>
@@ -39,7 +42,7 @@ function App() {
                     <div className="App">
                       <Header onAuthModalOpen={handleAuthModalOpen} />
                       <Router
-                        products={sampleProducts}
+                        products={stableProducts}
                         onAuthModalOpen={handleAuthModalOpen}
                       />
                       <Footer />
@@ -61,4 +64,4 @@ function App() {
   );
 }
 
-export default App;
+export default React.memo(App);
