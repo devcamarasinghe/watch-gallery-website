@@ -1,5 +1,15 @@
 // src/context/AuthContext.js
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { auth } from '../firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+
 
 const AuthContext = createContext();
 
@@ -7,63 +17,21 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  error: null
+  error: null,
 };
 
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_START':
-      return {
-        ...state,
-        isLoading: true,
-        error: null
-      };
-    
+      return { ...state, isLoading: true, error: null };
     case 'LOGIN_SUCCESS':
-      return {
-        ...state,
-        user: action.payload,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null
-      };
-    
+      return { ...state, user: action.payload, isAuthenticated: true, isLoading: false, error: null };
     case 'LOGIN_FAILURE':
-      return {
-        ...state,
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: action.payload
-      };
-    
+      return { ...state, user: null, isAuthenticated: false, isLoading: false, error: action.payload };
     case 'LOGOUT':
-      return {
-        ...state,
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null
-      };
-    
-    case 'UPDATE_PROFILE':
-      return {
-        ...state,
-        user: { ...state.user, ...action.payload }
-      };
-    
-    case 'CLEAR_ERROR':
-      return {
-        ...state,
-        error: null
-      };
-    
+      return { ...state, user: null, isAuthenticated: false, isLoading: false, error: null };
     case 'SET_LOADING':
-      return {
-        ...state,
-        isLoading: action.payload
-      };
-    
+      return { ...state, isLoading: action.payload };
     default:
       return state;
   }
@@ -72,142 +40,64 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Check for existing user session on app load
+  // Monitor auth state
   useEffect(() => {
-    const checkAuthStatus = () => {
-      const savedUser = localStorage.getItem('watchshop-user');
-      const token = localStorage.getItem('watchshop-token');
-      
-      if (savedUser && token) {
-        try {
-          const user = JSON.parse(savedUser);
-          dispatch({ type: 'LOGIN_SUCCESS', payload: user });
-        } catch (error) {
-          console.error('Error parsing saved user:', error);
-          localStorage.removeItem('watchshop-user');
-          localStorage.removeItem('watchshop-token');
-        }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch({ type: 'LOGIN_SUCCESS', payload: user });
+      } else {
+        dispatch({ type: 'LOGOUT' });
       }
-      
       dispatch({ type: 'SET_LOADING', payload: false });
-    };
+    });
 
-    checkAuthStatus();
+    return () => unsubscribe();
   }, []);
 
   const login = async (email, password) => {
     dispatch({ type: 'LOGIN_START' });
-    
     try {
-      // Simulate API call - replace with real authentication
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data - replace with real API response
-      const mockUser = {
-        id: 1,
-        email: email,
-        firstName: 'John',
-        lastName: 'Doe',
-        phone: '+1 (555) 123-4567',
-        address: {
-          street: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'USA'
-        },
-        preferences: {
-          newsletter: true,
-          notifications: true
-        },
-        orderHistory: [],
-        wishlist: []
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      
-      // Save to localStorage
-      localStorage.setItem('watchshop-user', JSON.stringify(mockUser));
-      localStorage.setItem('watchshop-token', mockToken);
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: mockUser });
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      dispatch({ type: 'LOGIN_SUCCESS', payload: userCredential.user });
       return { success: true };
-      
     } catch (error) {
-      const errorMessage = error.message || 'Login failed. Please try again.';
-      dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
-      return { success: false, error: errorMessage };
+      dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
+      return { success: false, error: error.message };
     }
   };
 
-  const register = async (userData) => {
+  const register = async (email, password, additionalData = {}) => {
     dispatch({ type: 'LOGIN_START' });
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = {
-        id: Date.now(),
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone || '',
-        address: {
-          street: '',
-          city: '',
-          state: '',
-          zipCode: '',
-          country: 'USA'
-        },
-        preferences: {
-          newsletter: userData.newsletter || false,
-          notifications: true
-        },
-        orderHistory: [],
-        wishlist: []
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      
-      localStorage.setItem('watchshop-user', JSON.stringify(newUser));
-      localStorage.setItem('watchshop-token', mockToken);
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: newUser });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Optional: Save extra data to Firestore
+      if (Object.keys(additionalData).length > 0) {
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          ...additionalData,
+          createdAt: new Date()
+        });
+      }
+
+      dispatch({ type: 'LOGIN_SUCCESS', payload: user });
       return { success: true };
-      
     } catch (error) {
-      const errorMessage = error.message || 'Registration failed. Please try again.';
-      dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
-      return { success: false, error: errorMessage };
+      dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
+      return { success: false, error: error.message };
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('watchshop-user');
-    localStorage.removeItem('watchshop-token');
+
+  const logout = async () => {
+    await signOut(auth);
     dispatch({ type: 'LOGOUT' });
   };
 
-  const updateProfile = (updatedData) => {
-    const updatedUser = { ...state.user, ...updatedData };
-    localStorage.setItem('watchshop-user', JSON.stringify(updatedUser));
-    dispatch({ type: 'UPDATE_PROFILE', payload: updatedData });
-  };
-
-  const clearError = () => {
-    dispatch({ type: 'CLEAR_ERROR' });
-  };
-
   return (
-    <AuthContext.Provider value={{
-      ...state,
-      login,
-      register,
-      logout,
-      updateProfile,
-      clearError
-    }}>
+    <AuthContext.Provider value={{ ...state, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
