@@ -1,11 +1,12 @@
 // src/components/product/ProductCardList.js
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useInventory } from '../../hooks/useInventory'; // Import the useInventory hook
 import StockStatus from '../common/StockStatus'; // Import StockStatus component
+import QuantitySelector from '../common/QuantitySelector';
 
 const ListCardContainer = styled.div`
   background: ${props => props.theme.colors.background};
@@ -264,6 +265,7 @@ const AddToCartButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
+    justify-content: center; 
   align-items: center;
   gap: 0.5rem;
   white-space: nowrap;
@@ -300,11 +302,18 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const images = product.images || [];
   const hasImages = images.length > 0;
 
+  const [quantity, setQuantity] = useState(1);
+
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+
   // Use the useInventory hook for stock management
   const {
     // availableQuantity,
-    // remainingQuantity,
+    remainingQuantity,
     isOutOfStock,
+    getMaxQuantityForCart,
     getStockStatus,
     canAddToCart,
   } = useInventory(product);
@@ -341,9 +350,9 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    if (canAddToCart(1)) {
-      addToCart(product, 1);
-      console.log(`Added ${product.name} to cart`);
+    if (canAddToCart(quantity)) {
+      addToCart(product, quantity);
+      console.log(`Added ${quantity} ${product.name} to cart`);
     } else {
       alert('Sorry, this item is out of stock or you have reached the maximum available quantity.');
     }
@@ -448,12 +457,28 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
             </ActionButtons>
 
             {!isOutOfStock ? (
-              <AddToCartButton
-                onClick={handleAddToCart}
-                disabled={!canAddToCart(1)}>
-                <FiShoppingCart />
-                {canAddToCart(1) ? 'Add to Cart' : 'Max Quantity Reached'}
-              </AddToCartButton>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <QuantitySelector
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  min={1}
+                  max={getMaxQuantityForCart()}
+                  availableQuantity={remainingQuantity}
+                  showStockInfo={false}
+                  style={{
+                    marginBottom: '0.5rem',
+                    width: '100%',
+                    maxWidth: '200px'
+                  }}
+                />
+                <AddToCartButton
+                  onClick={handleAddToCart}
+                  disabled={!canAddToCart(quantity)}
+                >
+                  <FiShoppingCart />
+                  {canAddToCart(quantity) ? 'Add to Cart' : 'Max Quantity Reached'}
+                </AddToCartButton>
+              </div>
             ) : (
               <AddToCartButton
                 preOrder
