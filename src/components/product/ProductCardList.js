@@ -1,13 +1,14 @@
 // src/components/product/ProductCardList.js
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useInventory } from '../../hooks/useInventory'; // Import the useInventory hook
 import StockStatus from '../common/StockStatus'; // Import StockStatus component
 import QuantitySelector from '../common/QuantitySelector';
 
+// Update the ListCardContainer to center vertically
 const ListCardContainer = styled.div`
   background: ${props => props.theme.colors.background};
   border: 1px solid ${props => props.theme.colors.border};
@@ -17,15 +18,147 @@ const ListCardContainer = styled.div`
   display: flex;
   margin-bottom: 1rem;
   cursor: pointer;
+  align-items: center; // This centers vertically
+  min-height: 180px; // Set a minimum height
   
   &:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
   }
   
-  &:hover .action-buttons {
+  &:hover .nav-button {
     opacity: 1;
-    transform: translateX(0);
+  }
+  
+  &:hover .quick-view {
+    transform: translateY(0);
+  }
+`;
+
+const QuickViewOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, rgba(44, 44, 44, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transform: translateY(100%);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  z-index: 3;
+  
+  ${ListCardContainer}:hover & {
+    transform: translateY(0);
+  }
+`;
+
+// Update ImageCarousel to maintain aspect ratio
+const ImageCarousel = styled.div`
+  position: relative;
+  width: 250px;  // Increased from 200px
+  height: 180px; // Increased from 150px
+  flex-shrink: 0;
+  overflow: hidden;
+  background: ${props => props.theme.colors.backgroundSecondary};
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 120px;
+    height: 120px;
+  }
+`;
+
+// Update ProductImage to center properly
+const ProductImage = styled.img.withConfig({
+  shouldForwardProp: (prop) => !['$totalImages'].includes(prop)
+}).attrs(({ $totalImages }) => ({
+  style: {
+    width: `${100 / $totalImages}%`
+  }
+}))`
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+`;
+
+const ImageContainer = styled.div.attrs(({ $currentIndex, $imageCount }) => ({
+  style: {
+    width: `${$imageCount * 100}%`,
+    transform: `translateX(-${$currentIndex * (100 / $imageCount)}%)`
+  }
+}))`
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+`;
+
+const NavButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) scale(0.8);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: ${props => props.theme.colors.text};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 2;
+  
+  &:hover {
+    background: ${props => props.theme.colors.secondary};
+    color: ${props => props.theme.colors.background};
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  
+  &.prev {
+    left: 8px;
+  }
+  
+  &.next {
+    right: 8px;
+  }
+`;
+
+const ImageIndicators = styled.div`
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+`;
+
+const Indicator = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$active'].includes(prop)
+})`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: ${props => props.$active ? props.theme.colors.secondary : 'rgba(255, 255, 255, 0.5)'};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: ${props => props.theme.colors.secondary};
+    transform: scale(1.2);
   }
 `;
 
@@ -40,17 +173,6 @@ const ImageSection = styled.div`
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     width: 120px;
     height: 120px;
-  }
-`;
-
-const ProductImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-  
-  ${ListCardContainer}:hover & {
-    transform: scale(1.05);
   }
 `;
 
@@ -297,6 +419,7 @@ const AddToCartButton = styled.button`
 const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const isWishlisted = isInWishlist(product.id);
   const images = product.images || [];
@@ -333,6 +456,22 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
     badges = [],
     // inStock = true
   } = product;
+
+  // Add image navigation functions
+  const nextImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToImage = (index, e) => {
+    e.stopPropagation();
+    setCurrentImageIndex(index);
+  };
 
   const handleWishlistToggle = (e) => {
     e.stopPropagation();
@@ -384,15 +523,55 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   return (
     <ListCardContainer onClick={handleCardClick}>
-      <ImageSection>
+      <ImageCarousel>
         {hasImages ? (
-          <ProductImage
-            src={images[0]}
-            alt={name}
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
+          <>
+            <ImageContainer
+              $currentIndex={currentImageIndex}
+              $imageCount={images.length}
+            >
+              {images.map((image, index) => (
+                <ProductImage
+                  key={index}
+                  src={image}
+                  alt={`${name} - View ${index + 1}`}
+                  $totalImages={images.length}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ))}
+            </ImageContainer>
+
+            {images.length > 1 && (
+              <>
+                <NavButton
+                  className="nav-button prev"
+                  onClick={prevImage}
+                  disabled={currentImageIndex === 0}
+                >
+                  <FiChevronLeft />
+                </NavButton>
+                <NavButton
+                  className="nav-button next"
+                  onClick={nextImage}
+                  disabled={currentImageIndex === images.length - 1}
+                >
+                  <FiChevronRight />
+                </NavButton>
+
+                <ImageIndicators>
+                  {images.map((_, index) => (
+                    <Indicator
+                      key={index}
+                      $active={index === currentImageIndex}
+                      onClick={(e) => goToImage(index, e)}
+                    />
+                  ))}
+                </ImageIndicators>
+              </>
+            )}
+          </>
         ) : (
           <ImagePlaceholder>⌚</ImagePlaceholder>
         )}
@@ -406,7 +585,14 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
             ))}
           </BadgeContainer>
         )}
-      </ImageSection>
+
+        <QuickViewOverlay
+          className="quick-view"
+          onClick={handleQuickView}
+        >
+          Quick View
+        </QuickViewOverlay>
+      </ImageCarousel>
 
       <ContentSection>
         <div>
