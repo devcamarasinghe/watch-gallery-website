@@ -1,24 +1,137 @@
 // src/components/auth/LoginForm.js
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { FiEye, FiEyeOff, FiMail, FiLock, FiLoader } from 'react-icons/fi';
+import styled, { keyframes } from 'styled-components';
+import { FiEye, FiEyeOff, FiMail, FiLock, FiLoader, FiX } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
+// Animations
+const slideUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+`;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const FormOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: ${fadeIn} 0.3s ease;
+  backdrop-filter: blur(5px);
+`;
+
 const FormContainer = styled.div`
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
+  position: relative;
+  max-width: 450px;
+  width: 100%;
+  max-height: 95vh;
   background: ${props => props.theme.colors.background};
-  border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: ${slideUp} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin: 0.5rem;
+    max-height: 98vh;
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: ${props => props.theme.colors.text};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    background: ${props => props.theme.colors.error};
+    color: white;
+    transform: scale(1.1);
+  }
+`;
+
+const FormContent = styled.div`
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: 95vh;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: ${props => props.theme.colors.backgroundSecondary};
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${props => props.theme.colors.secondary};
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #b8941f;
+  }
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 1.5rem;
+  }
+`;
+
+const FormHeader = styled.div`
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-top: 1rem;
 `;
 
 const FormTitle = styled.h2`
-  text-align: center;
-  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 800;
   color: ${props => props.theme.colors.primary};
-  font-family: ${props => props.theme.fonts.secondary};
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const FormSubtitle = styled.p`
+  color: ${props => props.theme.colors.textMuted};
+  font-size: 1rem;
+  margin-bottom: 0;
 `;
 
 const Form = styled.form`
@@ -33,9 +146,10 @@ const InputGroup = styled.div`
 
 const InputLabel = styled.label`
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
   color: ${props => props.theme.colors.text};
+  font-size: 0.95rem;
 `;
 
 const InputContainer = styled.div`
@@ -44,69 +158,94 @@ const InputContainer = styled.div`
   align-items: center;
 `;
 
-const Input = styled.input`
+const Input = styled.input.withConfig({
+  shouldForwardProp: (prop) => !['$hasError'].includes(prop)
+})`
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.5rem;
-  border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 8px;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid ${props => props.$hasError ? props.theme.colors.error : props.theme.colors.border};
+  border-radius: 12px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  background: ${props => props.theme.colors.backgroundSecondary};
+  color: ${props => props.theme.colors.text};
   
   &:focus {
     outline: none;
     border-color: ${props => props.theme.colors.secondary};
+    background: ${props => props.theme.colors.background};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
   }
   
-  &.error {
-    border-color: ${props => props.theme.colors.error};
+  &::placeholder {
+    color: ${props => props.theme.colors.textMuted};
+  }
+  
+  &:hover:not(:focus) {
+    border-color: ${props => props.theme.colors.textMuted};
   }
 `;
 
 const InputIcon = styled.div`
   position: absolute;
-  left: 0.8rem;
+  left: 1rem;
   color: ${props => props.theme.colors.textMuted};
   z-index: 1;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+  
+  ${Input}:focus ~ & {
+    color: ${props => props.theme.colors.secondary};
+  }
 `;
 
 const PasswordToggle = styled.button`
   position: absolute;
-  right: 0.8rem;
+  right: 1rem;
   background: none;
   border: none;
   color: ${props => props.theme.colors.textMuted};
   cursor: pointer;
   padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
   
   &:hover {
     color: ${props => props.theme.colors.text};
+    background: rgba(212, 175, 55, 0.1);
   }
 `;
 
 const ErrorMessage = styled.span`
   color: ${props => props.theme.colors.error};
   font-size: 0.85rem;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+  display: block;
+  font-weight: 500;
 `;
 
-const SubmitButton = styled.button`
-  padding: 1rem;
-  background: ${props => props.theme.colors.secondary};
+const SubmitButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$isLoading'].includes(prop)
+})`
+  padding: 1.2rem 2rem;
+  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
   color: ${props => props.theme.colors.background};
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
+  margin-top: 1rem;
   
   &:hover:not(:disabled) {
-    background: #b8941f;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(44, 44, 44, 0.3);
   }
   
   &:disabled {
@@ -114,39 +253,53 @@ const SubmitButton = styled.button`
     cursor: not-allowed;
     transform: none;
   }
+  
+  ${props => props.$isLoading && `
+    svg {
+      animation: spin 1s linear infinite;
+    }
+  `}
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 `;
 
-const FormLinks = styled.div`
+const FormFooter = styled.div`
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid ${props => props.theme.colors.border};
+  
+  p {
+    color: ${props => props.theme.colors.textMuted};
+    margin: 0;
+    font-size: 0.95rem;
+  }
   
   a {
     color: ${props => props.theme.colors.secondary};
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    transition: color 0.3s ease;
     
     &:hover {
+      color: #b8941f;
       text-decoration: underline;
     }
   }
 `;
 
-const DemoCredentials = styled.div`
-  background: ${props => props.theme.colors.backgroundSecondary};
+const AuthError = styled.div`
+  background: rgba(239, 68, 68, 0.1);
+  color: ${props => props.theme.colors.error};
   padding: 1rem;
   border-radius: 8px;
-  margin-bottom: 1rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   font-size: 0.9rem;
-  
-  h4 {
-    color: ${props => props.theme.colors.primary};
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    color: ${props => props.theme.colors.textMuted};
-    margin: 0.25rem 0;
-  }
+  font-weight: 500;
+  margin-bottom: 1rem;
 `;
 
 const LoginForm = ({ onSwitchToRegister, onClose }) => {
@@ -158,6 +311,16 @@ const LoginForm = ({ onSwitchToRegister, onClose }) => {
   const [errors, setErrors] = useState({});
   
   const { login, isLoading, error, clearError } = useAuth();
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const handleFormClick = (e) => {
+    e.stopPropagation();
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -211,104 +374,87 @@ const LoginForm = ({ onSwitchToRegister, onClose }) => {
     }
   };
 
-  const fillDemoCredentials = () => {
-    setFormData({
-      email: 'demo@watchshop.com',
-      password: 'demo123'
-    });
-  };
-
   return (
-    <FormContainer>
-      <FormTitle>Welcome Back</FormTitle>
-      
-      <DemoCredentials>
-        <h4>Demo Account</h4>
-        <p>Email: demo@watchshop.com</p>
-        <p>Password: demo123</p>
-        <button 
-          type="button" 
-          onClick={fillDemoCredentials}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#D4AF37',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            fontSize: '0.85rem',
-            marginTop: '0.5rem'
-          }}
-        >
-          Click to fill demo credentials
-        </button>
-      </DemoCredentials>
-      
-      <Form onSubmit={handleSubmit}>
-        <InputGroup>
-          <InputLabel>Email Address</InputLabel>
-          <InputContainer>
-            <InputIcon>
-              <FiMail />
-            </InputIcon>
-            <Input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              className={errors.email ? 'error' : ''}
-            />
-          </InputContainer>
-          {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
-        </InputGroup>
+    <FormOverlay onClick={handleOverlayClick}>
+      <FormContainer onClick={handleFormClick}>
+        <CloseButton onClick={onClose}>
+          <FiX />
+        </CloseButton>
 
-        <InputGroup>
-          <InputLabel>Password</InputLabel>
-          <InputContainer>
-            <InputIcon>
-              <FiLock />
-            </InputIcon>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className={errors.password ? 'error' : ''}
-            />
-            <PasswordToggle
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
-            </PasswordToggle>
-          </InputContainer>
-          {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
-        </InputGroup>
+        <FormContent>
+          <FormHeader>
+            <FormTitle>Welcome Back</FormTitle>
+            <FormSubtitle>Sign in to access your account</FormSubtitle>
+          </FormHeader>
 
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+          <Form onSubmit={handleSubmit}>
+            <InputGroup>
+              <InputLabel>Email Address</InputLabel>
+              <InputContainer>
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email address"
+                  $hasError={!!errors.email}
+                />
+                <InputIcon>
+                  <FiMail />
+                </InputIcon>
+              </InputContainer>
+              {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
+            </InputGroup>
 
-        <SubmitButton type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <FiLoader className="spin" />
-              Signing In...
-            </>
-          ) : (
-            'Sign In'
-          )}
-        </SubmitButton>
-      </Form>
+            <InputGroup>
+              <InputLabel>Password</InputLabel>
+              <InputContainer>
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  $hasError={!!errors.password}
+                />
+                <InputIcon>
+                  <FiLock />
+                </InputIcon>
+                <PasswordToggle
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </PasswordToggle>
+              </InputContainer>
+              {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
+            </InputGroup>
 
-      <FormLinks>
-        <p>
-          Don't have an account?{' '}
-          <a href="#" onClick={(e) => { e.preventDefault(); onSwitchToRegister(); }}>
-            Sign up here
-          </a>
-        </p>
-      </FormLinks>
-    </FormContainer>
+            {error && <AuthError>{error}</AuthError>}
+
+            <SubmitButton type="submit" disabled={isLoading} $isLoading={isLoading}>
+              {isLoading ? (
+                <>
+                  <FiLoader />
+                  Signing In...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </SubmitButton>
+          </Form>
+
+          <FormFooter>
+            <p>
+              Don't have an account?{' '}
+              <a href="#" onClick={(e) => { e.preventDefault(); onSwitchToRegister(); }}>
+                Sign up here
+              </a>
+            </p>
+          </FormFooter>
+        </FormContent>
+      </FormContainer>
+    </FormOverlay>
   );
 };
 
