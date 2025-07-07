@@ -252,19 +252,21 @@ const DropdownItem = styled.button`
   }
 `;
 
-const WishlistButton = styled(IconButton)`
-  ${props => props.hasItems && `
-    &::after {
-      content: '';
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 8px;
-      height: 8px;
-      background: ${props.theme.colors.error};
-      border-radius: 50%;
-    }
-  `}
+const WishlistButton = styled(IconButton).attrs(({ hasItems }) => ({
+  'data-has-items': hasItems
+}))`
+  position: relative;
+  
+  &[data-has-items="true"]::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: ${props => props.theme.colors.error};
+    border-radius: 50%;
+  }
 `;
 
 const Header = ({ onAuthModalOpen }) => {
@@ -368,12 +370,14 @@ const Header = ({ onAuthModalOpen }) => {
           {/* Wishlist - only show for authenticated users */}
           {isAuthenticated && (
             <WishlistButton
-              hasItems={wishlistCount > 0}
+              data-has-items={wishlistCount > 0}
               title="Wishlist"
               onClick={() => window.navigateTo && window.navigateTo('wishlist')}
             >
               <FiHeart />
-              <CartBadge>{wishlistCount}</CartBadge>
+              {wishlistCount > 0 && (
+                <CartBadge>{wishlistCount}</CartBadge>
+              )}
             </WishlistButton>
           )}
 
