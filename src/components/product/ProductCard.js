@@ -1,9 +1,12 @@
 // src/components/product/ProductCard.js
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { FiHeart, FiShoppingCart, FiEye, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import styled, { keyframes, css } from 'styled-components';
+import { FiHeart, FiShoppingCart, FiStar, FiPackage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useInventory } from '../../hooks/useInventory';
+import StockStatus from '../common/StockStatus';
+import QuantitySelector from '../common/QuantitySelector';
 
 const ActionButtons = styled.div`
   position: absolute;
@@ -41,7 +44,7 @@ const fadeIn = keyframes`
 
 // Update CardContent padding for larger cards:
 const CardContent = styled.div`
-  padding: 1.8rem; // Increased from 1.5rem
+  padding: 1.8rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -129,7 +132,7 @@ const AddToCartButton = styled.button`
     background: ${props => props.theme.colors.textMuted};
   }
   
-  ${props => props.preOrder && `
+  ${props => props.$preOrder && `
     background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
     
     &:hover {
@@ -204,25 +207,24 @@ const CardContainer = styled.div`
   }
 `;
 
-
-const ImageContainer = styled.div`
+const ImageContainer = styled.div.attrs(({ $currentIndex, $imageCount }) => ({
+  style: {
+    width: `${$imageCount * 100}%`,
+    transform: `translateX(-${$currentIndex * (100 / $imageCount)}%)`
+  }
+}))`
   display: flex;
-  width: ${props => props.imageCount * 100}%;
   height: 100%;
-  transform: translateX(-${props => props.currentIndex * (100 / props.imageCount)}%);
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 `;
 
-const ProductImage = styled.img`
-  width: ${props => 100 / props.totalImages}%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  flex-shrink: 0;
-`;
-
-const ImagePlaceholder = styled.div`
-  width: ${props => 100 / props.totalImages}%;
+const ImagePlaceholder = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['$totalImages'].includes(prop)
+}).attrs(({ $totalImages }) => ({
+  style: {
+    width: `${100 / $totalImages}%`
+  }
+}))`
   height: 100%;
   display: flex;
   align-items: center;
@@ -230,6 +232,20 @@ const ImagePlaceholder = styled.div`
   font-size: 4rem;
   color: ${props => props.theme.colors.textMuted};
   background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  flex-shrink: 0;
+`;
+
+// Also update the ProductImage component to use transient props:
+const ProductImage = styled.img.withConfig({
+  shouldForwardProp: (prop) => !['$totalImages'].includes(prop)
+}).attrs(({ $totalImages }) => ({
+  style: {
+    width: `${100 / $totalImages}%`
+  }
+}))`
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   flex-shrink: 0;
 `;
 
@@ -282,12 +298,14 @@ const ImageIndicators = styled.div`
   z-index: 2;
 `;
 
-const Indicator = styled.button`
+const Indicator = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$active'].includes(prop)
+})`
   width: 6px;
   height: 6px;
   border-radius: 50%;
   border: none;
-  background: ${props => props.active ? props.theme.colors.secondary : 'rgba(255, 255, 255, 0.5)'};
+  background: ${props => props.$active ? props.theme.colors.secondary : 'rgba(255, 255, 255, 0.5)'};
   cursor: pointer;
   transition: all 0.3s ease;
   
@@ -316,32 +334,35 @@ const Badge = styled.span`
   letter-spacing: 0.5px;
   animation: ${slideIn} 0.5s ease;
   
-  ${props => props.type === 'sale' && `
+  ${props => props.type === 'sale' && css`
     background: linear-gradient(135deg, ${props.theme.colors.error} 0%, #c53030 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
   `}
   
-  ${props => props.type === 'new' && `
+  ${props => props.type === 'new' && css`
     background: linear-gradient(135deg, ${props.theme.colors.success} 0%, #38a169 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   `}
   
-  ${props => props.type === 'limited' && `
+  ${props => props.type === 'limited' && css`
     background: linear-gradient(135deg, ${props.theme.colors.secondary} 0%, #b8941f 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
   `}
 `;
 
-const ActionButton = styled.button`
+// Fixed ActionButton - using transient prop $active instead of active
+const ActionButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$active'].includes(prop)
+})`
   width: 36px;
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.95);
-  color: ${props => props.theme.colors.text};
+  background: ${props => props.$active ? props.theme.colors.error : 'rgba(255, 255, 255, 0.95)'};
+  color: ${props => props.$active ? 'white' : props.theme.colors.text};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -356,9 +377,7 @@ const ActionButton = styled.button`
     transform: scale(1.1);
   }
   
-  ${props => props.active && `
-    background: ${props.theme.colors.error};
-    color: white;
+  ${props => props.$active && css`
     animation: ${pulse} 0.6s ease;
   `}
 `;
@@ -397,10 +416,13 @@ const StarRating = styled.div`
   gap: 0.2rem;
 `;
 
-const Star = styled(FiStar)`
+const Star = styled(FiStar).withConfig({
+  shouldForwardProp: (prop) => !['$filled'].includes(prop)
+}).attrs(({ $filled, theme }) => ({
+  color: $filled ? '#FFD700' : theme.colors.border,
+  fill: $filled ? '#FFD700' : 'none'
+}))`
   font-size: 0.9rem;
-  color: ${props => props.filled ? '#FFD700' : props.theme.colors.border};
-  fill: ${props => props.filled ? '#FFD700' : 'none'};
   transition: all 0.2s ease;
 `;
 
@@ -457,18 +479,36 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
   const images = product.images || [];
   const hasImages = images.length > 0;
 
+  const [quantity, setQuantity] = useState(1);
+
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+
+  // Add inventory hook
+  const {
+    // availableQuantity,
+    remainingQuantity,
+    getMaxQuantityForCart,
+    isOutOfStock,
+    getStockStatus,
+    canAddToCart
+  } = useInventory(product);
+
+  const stockStatus = getStockStatus();
+
   const {
     id,
     name,
     brand,
-    price,
-    originalPrice,
-    discount,
+    // price,
+    // originalPrice,
+    // discount,
     rating = 0,
     reviewCount = 0,
     gender,
     badges = [],
-    inStock = true
+    // inStock = true
   } = product;
 
   const handleWishlistToggle = (e) => {
@@ -487,9 +527,11 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    if (inStock) {
-      addToCart(product, 1);
-      console.log(`Added ${name} to cart`);
+    if (canAddToCart(quantity)) {
+      addToCart(product, quantity);
+      console.log(`Added ${quantity} ${product.name} to cart`);
+    } else {
+      alert('Sorry, this item is out of stock or you have reached the maximum available quantity.');
     }
   };
 
@@ -523,7 +565,7 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
     for (let i = 0; i < 5; i++) {
       stars.push(
-        <Star key={i} filled={i < fullStars} />
+        <Star key={i} $filled={i < fullStars} />
       );
     }
     return stars;
@@ -535,15 +577,15 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
         {hasImages ? (
           <>
             <ImageContainer
-              currentIndex={currentImageIndex}
-              imageCount={images.length}
+              $currentIndex={currentImageIndex}
+              $imageCount={images.length}
             >
               {images.map((image, index) => (
                 <ProductImage
                   key={index}
                   src={image}
                   alt={`${name} - View ${index + 1}`}
-                  totalImages={images.length}
+                  $totalImages={images.length}
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
@@ -572,7 +614,7 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
                   {images.map((_, index) => (
                     <Indicator
                       key={index}
-                      active={index === currentImageIndex}
+                      $active={index === currentImageIndex}
                       onClick={(e) => goToImage(index, e)}
                     />
                   ))}
@@ -581,7 +623,7 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
             )}
           </>
         ) : (
-          <ImagePlaceholder totalImages={1}>
+          <ImagePlaceholder $totalImages={1}>
             ⌚
           </ImagePlaceholder>
         )}
@@ -598,14 +640,8 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
 
         <ActionButtons className="action-buttons">
           <ActionButton
-            onClick={handleQuickView}
-            title="Quick View"
-          >
-            <FiEye />
-          </ActionButton>
-          <ActionButton
             onClick={handleWishlistToggle}
-            active={isWishlisted}
+            $active={isWishlisted}
             title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
           >
             <FiHeart />
@@ -621,6 +657,12 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
         <ProductBrand>{brand}</ProductBrand>
         <ProductName>{name}</ProductName>
 
+        <StockStatus
+          status={stockStatus.status}
+          label={stockStatus.label}
+          showIcon={true}
+        />
+
         {rating > 0 ? (
           <RatingContainer>
             <StarRating>
@@ -635,31 +677,45 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
         <GenderTag>{gender}</GenderTag>
 
         <PriceContainer>
-          <CurrentPrice>${price}</CurrentPrice>
-          {originalPrice && originalPrice > price && (
+          <CurrentPrice>${product.price}</CurrentPrice>
+          {product.originalPrice && product.originalPrice > product.price && (
             <>
-              <OriginalPrice>${originalPrice}</OriginalPrice>
-              <Discount>-{discount}%</Discount>
+              <OriginalPrice>${product.originalPrice}</OriginalPrice>
+              <Discount>-{product.discount}%</Discount>
             </>
           )}
         </PriceContainer>
 
         <CardSpacer />
 
-        {inStock ? (
-          <AddToCartButton onClick={handleAddToCart}>
-            <FiShoppingCart />
-            Add to Cart
-          </AddToCartButton>
+        {!isOutOfStock ? (
+          <>
+            <QuantitySelector
+              value={quantity}
+              onChange={handleQuantityChange}
+              min={1}
+              max={getMaxQuantityForCart()}
+              availableQuantity={remainingQuantity}
+              showStockInfo={false}
+            />
+            <AddToCartButton
+              onClick={handleAddToCart}
+              disabled={!canAddToCart(quantity)}
+            >
+              <FiShoppingCart />
+              {canAddToCart(quantity) ? 'Add to Cart' : 'Max Quantity Reached'}
+            </AddToCartButton>
+          </>
         ) : (
           <AddToCartButton
-            preOrder
+            $preOrder
             onClick={handlePreOrder}
           >
             <FiPackage />
             Pre-Order
           </AddToCartButton>
         )}
+
       </CardContent>
     </CardContainer>
   );

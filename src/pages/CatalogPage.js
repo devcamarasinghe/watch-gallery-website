@@ -1,5 +1,5 @@
 // src/components/pages/CatalogPage.js
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import styled from 'styled-components';
 import { FiFilter, FiGrid, FiList } from 'react-icons/fi';
 import FilterSidebar from '../components/product/FilterSidebar';
@@ -8,20 +8,80 @@ import { useProductFilter } from '../hooks/useProductFilter';
 import { useFilter } from '../context/FilterContext';
 import PreOrderModal from '../components/product/PreOrderModal';
 import QuickViewModal from '../components/product/QuickViewModal';
+import Pagination from '../components/common/Pagination';
+import { usePaginatedProducts } from '../hooks/usePaginatedProducts';
 
-// Update the layout to give more space to products:
-
+// Styled components remain exactly the same
 const CatalogContainer = styled.div`
-  max-width: 1400px; // Increased from 1200px
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
-  gap: 1.2rem; // Reduced from 1.5rem
+  gap: 1.2rem;
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     flex-direction: column;
     gap: 1rem;
   }
+`;
+
+const CatalogControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+`;
+
+const ViewModeIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: ${props => props.theme.colors.textMuted};
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    display: none;
+  }
+`;
+
+const ViewButton = styled.button.attrs(({ $active }) => ({
+  'data-active': $active
+}))`
+  padding: 0.7rem 1rem;
+  background: ${props => props.$active ? props.theme.colors.primary : props.theme.colors.background};
+  color: ${props => props.$active ? props.theme.colors.background : props.theme.colors.text};
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  min-width: 44px;
+  
+  &:hover {
+    background: ${props => props.$active ? props.theme.colors.primary : props.theme.colors.backgroundSecondary};
+  }
+  
+  &:first-child {
+    border-right: 1px solid ${props => props.theme.colors.border};
+  }
+  
+  svg {
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover svg {
+    transform: scale(1.1);
+  }
+`;
+
+const ViewToggle = styled.div`
+  display: flex;
+  border: 2px solid ${props => props.theme.colors.border};
+  border-radius: 8px;
+  overflow: hidden;
+  background: ${props => props.theme.colors.background};
 `;
 
 const Sidebar = styled.aside`
@@ -60,12 +120,6 @@ const ResultsInfo = styled.div`
   }
 `;
 
-const CatalogControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
 const SortSelect = styled.select`
   padding: 0.6rem 1rem;
   border: 1px solid ${props => props.theme.colors.border};
@@ -97,26 +151,6 @@ const FilterButton = styled.button`
   }
 `;
 
-const ViewToggle = styled.div`
-  display: flex;
-  border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 6px;
-  overflow: hidden;
-`;
-
-const ViewButton = styled.button`
-  padding: 0.6rem;
-  background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.background};
-  color: ${props => props.active ? props.theme.colors.background : props.theme.colors.text};
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: ${props => props.active ? props.theme.colors.primary : props.theme.colors.backgroundSecondary};
-  }
-`;
-
 const NoResults = styled.div`
   text-align: center;
   padding: 4rem 2rem;
@@ -143,42 +177,72 @@ const ClearFiltersButton = styled.button`
   font-weight: 600;
 `;
 
-const CatalogPage = ({ products }) => {
+const CatalogPageContent = memo(({ products }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
+  const [viewMode, setViewMode] = useState('grid');
   const [preOrderModal, setPreOrderModal] = useState({ isOpen: false, product: null });
-  const [quickViewModal, setQuickViewModal] = useState({ isOpen: false, product: null }); // Add this state
+  const [quickViewModal, setQuickViewModal] = useState({ isOpen: false, product: null });
 
   const { sortBy, setSortBy, resetFilters } = useFilter();
+
+  // First get filtered products using the hook directly
   const filteredProducts = useProductFilter(products);
 
-  // Get unique brands for filter
-  const brands = [...new Set(products.map(product => product.brand))].sort();
+  // Then memoize the result to prevent recalculations
+  const memoizedFilteredProducts = useMemo(() => filteredProducts, [filteredProducts]);
 
-  const handleQuickViewClick = (product) => {
+  const { paginatedProducts } = usePaginatedProducts(memoizedFilteredProducts);
+
+  // Memoize brands calculation
+  const brands = useMemo(() => {
+    return [...new Set(products.map(product => product.brand))].sort();
+  }, [products]);
+
+  // Memoize all event handlers
+  const handleQuickViewClick = useCallback((product) => {
     setQuickViewModal({ isOpen: true, product });
-  };
+  }, []);
 
-  const handleQuickViewClose = () => {
+  const handleQuickViewClose = useCallback(() => {
     setQuickViewModal({ isOpen: false, product: null });
-  };
+  }, []);
 
-  // Add this handler
-  const handlePreOrderClick = (product) => {
+  const handlePreOrderClick = useCallback((product) => {
     setPreOrderModal({ isOpen: true, product });
-  };
+  }, []);
 
-  const handlePreOrderClose = () => {
+  const handlePreOrderClose = useCallback(() => {
     setPreOrderModal({ isOpen: false, product: null });
-  };
+  }, []);
 
-  return (
+  const handleSidebarToggle = useCallback(() => {
+    setIsSidebarOpen(prev => !prev);
+  }, []);
+
+  const handleSidebarClose = useCallback(() => {
+    setIsSidebarOpen(false);
+  }, []);
+
+  const handleSortChange = useCallback((e) => {
+    setSortBy(e.target.value);
+  }, [setSortBy]);
+
+  const handleViewModeChange = useCallback((mode) => {
+    setViewMode(mode);
+  }, []);
+
+  const handleResetFilters = useCallback(() => {
+    resetFilters();
+  }, [resetFilters]);
+
+  // Memoize the main content to prevent unnecessary re-renders
+  const memoizedContent = useMemo(() => (
     <>
       <CatalogContainer>
         <Sidebar>
           <FilterSidebar
             isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
+            onClose={handleSidebarClose}
             brands={brands}
           />
         </Sidebar>
@@ -191,14 +255,14 @@ const CatalogPage = ({ products }) => {
             </ResultsInfo>
 
             <CatalogControls>
-              <FilterButton onClick={() => setIsSidebarOpen(true)}>
+              <FilterButton onClick={handleSidebarToggle}>
                 <FiFilter />
                 Filters
               </FilterButton>
 
               <SortSelect
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={handleSortChange}
               >
                 <option value="featured">Featured</option>
                 <option value="price-low">Price: Low to High</option>
@@ -207,40 +271,52 @@ const CatalogPage = ({ products }) => {
                 <option value="newest">Newest</option>
               </SortSelect>
 
+              <ViewModeIndicator>
+                View:
+              </ViewModeIndicator>
+
               <ViewToggle>
                 <ViewButton
-                  active={viewMode === 'grid'}
-                  onClick={() => setViewMode('grid')}
+                  $active={viewMode === 'grid'}
+                  onClick={() => handleViewModeChange('grid')}
+                  title="Grid View"
                 >
                   <FiGrid />
                 </ViewButton>
                 <ViewButton
-                  active={viewMode === 'list'}
-                  onClick={() => setViewMode('list')}
+                  $active={viewMode === 'list'}
+                  onClick={() => handleViewModeChange('list')}
+                  title="List View"
                 >
                   <FiList />
                 </ViewButton>
+                {/* <FiList /> */}
               </ViewToggle>
             </CatalogControls>
           </CatalogHeader>
 
           {filteredProducts.length > 0 ? (
-            <ProductGrid products={filteredProducts}
-              onPreOrderClick={handlePreOrderClick}
-              onQuickViewClick={handleQuickViewClick} // Add this prop
-            />
+            <div>
+              <ProductGrid
+                products={paginatedProducts}
+                onPreOrderClick={handlePreOrderClick}
+                onQuickViewClick={handleQuickViewClick}
+                viewMode={viewMode}
+              />
+              <Pagination />
+            </div>
           ) : (
             <NoResults>
               <h3>No watches found</h3>
               <p>Try adjusting your filters to see more results</p>
-              <ClearFiltersButton onClick={resetFilters}>
+              <ClearFiltersButton onClick={handleResetFilters}>
                 Clear All Filters
               </ClearFiltersButton>
             </NoResults>
           )}
         </MainContent>
-      </CatalogContainer>
-      {/* Add PreOrderModal at the end, outside the main container */}
+      </CatalogContainer >
+
       <PreOrderModal
         isOpen={preOrderModal.isOpen}
         onClose={handlePreOrderClose}
@@ -253,9 +329,36 @@ const CatalogPage = ({ products }) => {
         product={quickViewModal.product}
         onPreOrderClick={handlePreOrderClick}
       />
-
     </>
-  );
-};
+  ), [
+    isSidebarOpen,
+    viewMode,
+    sortBy,
+    filteredProducts,
+    paginatedProducts,
+    brands,
+    preOrderModal,
+    quickViewModal,
+    handleSidebarClose,
+    handleSidebarToggle,
+    handleSortChange,
+    handleViewModeChange,
+    handlePreOrderClick,
+    handleQuickViewClick,
+    handleResetFilters,
+    handlePreOrderClose,
+    handleQuickViewClose
+  ]);
 
+  return memoizedContent;
+});
+
+// Main component with proper memoization
+const CatalogPage = memo(({ products }) => {
+  return <CatalogPageContent products={products} />;
+}, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.products) === JSON.stringify(nextProps.products);
+});
+
+CatalogPage.displayName = 'CatalogPage';
 export default CatalogPage;

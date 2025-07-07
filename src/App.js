@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ThemeProvider from './theme/ThemeProvider';
 import { CartProvider } from './context/CartContext';
 import { FilterProvider } from './context/FilterContext';
@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { OrdersProvider } from './context/OrdersContext';
 import { PreOrderProvider } from './context/PreOrderContext';
+import { PaginationProvider } from './context/PaginationContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import CartDropdown from './components/cart/CartDropdown';
@@ -18,13 +19,16 @@ import './App.css';
 function App() {
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' });
 
-  const handleAuthModalOpen = (mode = 'login') => {
-    setAuthModal({ isOpen: true, mode });
-  };
+  // Deep memoization of products
+  const stableProducts = useMemo(() => JSON.parse(JSON.stringify(sampleProducts)), []);
 
-  const handleAuthModalClose = () => {
+  const handleAuthModalOpen = useCallback((mode = 'login') => {
+    setAuthModal({ isOpen: true, mode });
+  }, []);
+
+  const handleAuthModalClose = useCallback(() => {
     setAuthModal({ isOpen: false, mode: 'login' });
-  };
+  }, []);
 
   return (
     <ThemeProvider>
@@ -34,20 +38,22 @@ function App() {
             <WishlistProvider>
               <CartProvider>
                 <FilterProvider>
-                  <div className="App">
-                    <Header onAuthModalOpen={handleAuthModalOpen} />
-                    <Router
-                      products={sampleProducts}
-                      onAuthModalOpen={handleAuthModalOpen}
-                    />
-                    <Footer />
-                    <CartDropdown />
-                    <AuthModal
-                      isOpen={authModal.isOpen}
-                      onClose={handleAuthModalClose}
-                      initialMode={authModal.mode}
-                    />
-                  </div>
+                  <PaginationProvider>
+                    <div className="App">
+                      <Header onAuthModalOpen={handleAuthModalOpen} />
+                      <Router
+                        products={stableProducts}
+                        onAuthModalOpen={handleAuthModalOpen}
+                      />
+                      <Footer />
+                      <CartDropdown />
+                      <AuthModal
+                        isOpen={authModal.isOpen}
+                        onClose={handleAuthModalClose}
+                        initialMode={authModal.mode}
+                      />
+                    </div>
+                  </PaginationProvider>
                 </FilterProvider>
               </CartProvider>
             </WishlistProvider>
@@ -58,4 +64,4 @@ function App() {
   );
 }
 
-export default App;
+export default React.memo(App);

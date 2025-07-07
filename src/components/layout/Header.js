@@ -38,13 +38,15 @@ const Logo = styled.div`
   }
 `;
 
-const Navigation = styled.nav`
+const Navigation = styled.nav.attrs(({ $isOpen }) => ({
+  'data-open': $isOpen
+}))`
   display: flex;
   align-items: center;
   gap: 2rem;
   
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    display: ${props => props.isOpen ? 'flex' : 'none'};
+    display: ${props => props.$isOpen ? 'flex' : 'none'};
     position: absolute;
     top: 70px;
     left: 0;
@@ -194,7 +196,9 @@ const UserButton = styled.button`
   }
 `;
 
-const UserDropdown = styled.div`
+const UserDropdown = styled.div.attrs(({ $isOpen }) => ({
+  'aria-expanded': $isOpen
+}))`
   position: absolute;
   top: 100%;
   right: 0;
@@ -204,7 +208,7 @@ const UserDropdown = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 200px;
   z-index: 1000;
-  display: ${props => props.isOpen ? 'block' : 'none'};
+  display: ${props => props.$isOpen ? 'block' : 'none'};
   margin-top: 0.5rem;
 `;
 
@@ -325,7 +329,7 @@ const Header = ({ onAuthModalOpen }) => {
           Lux<span>Watch</span>
         </Logo>
 
-        <Navigation isOpen={isMenuOpen}>
+        <Navigation $isOpen={isMenuOpen}>
           <NavLink onClick={() => { window.navigateTo && window.navigateTo('catalog'); setIsMenuOpen(false); }}>
             Home
           </NavLink>
@@ -393,7 +397,7 @@ const Header = ({ onAuthModalOpen }) => {
             </UserButton>
 
             {isAuthenticated && (
-              <UserDropdown isOpen={isUserMenuOpen}>
+              <UserDropdown $isOpen={isUserMenuOpen}>
                 <UserInfo>
                   <h4>{user.firstName} {user.lastName}</h4>
                   <p>{user.email}</p>

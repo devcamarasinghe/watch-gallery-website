@@ -177,8 +177,8 @@ const RegisterForm = ({ onSwitchToLogin, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  
-  const { register, isLoading, error, clearError } = useAuth();
+
+  const { register, isLoading, error } = useAuth();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -186,7 +186,7 @@ const RegisterForm = ({ onSwitchToLogin, onClose }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    
+
     // Clear field error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -194,57 +194,60 @@ const RegisterForm = ({ onSwitchToLogin, onClose }) => {
         [name]: ''
       }));
     }
-    
+
     // Clear auth error
-    if (error) {
-      clearError();
-    }
+    //   if (error) {
+    //     clearError();
+    //   }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
     }
-    
+
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
     }
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     if (!formData.terms) {
       newErrors.terms = 'You must accept the terms and conditions';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
-    const result = await register(formData);
-    
+
+    // const result = await register(formData);
+    const { firstName, lastName, email, phone, password } = formData;
+    const result = await register(email, password, { firstName, lastName, phone });
+
+
     if (result.success && onClose) {
       onClose();
     }
@@ -253,7 +256,7 @@ const RegisterForm = ({ onSwitchToLogin, onClose }) => {
   return (
     <FormContainer>
       <FormTitle>Create Account</FormTitle>
-      
+
       <Form onSubmit={handleSubmit}>
         <InputRow>
           <InputGroup>

@@ -16,9 +16,11 @@ import {
 } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import QuantitySelector from '../../components/common/QuantitySelector';
+import StockStatus from '../../components/common/StockStatus';
+import { useInventory } from '../../hooks/useInventory';
 
-// Update these styled components to fix the issues:
-
+// Animations
 const slideUp = keyframes`
   from {
     opacity: 0;
@@ -30,116 +32,6 @@ const slideUp = keyframes`
   }
 `;
 
-const ModalContainer = styled.div`
-  position: relative;
-  max-width: 1000px;
-  width: 100%;
-  max-height: 90vh;
-  background: ${props => props.theme.colors.background};
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-  animation: ${slideUp} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex; // Add this
-  flex-direction: column; // Add this
-  
-  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    max-height: 95vh;
-    margin: 1rem;
-  }
-`;
-
-const ImageSection = styled.div`
-  position: relative;
-  background: linear-gradient(135deg, ${props => props.theme.colors.backgroundSecondary} 0%, #f0f0f0 100%);
-  display: flex;
-  flex-direction: column;
-  min-height: 500px; // Add minimum height
-  
-  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    min-height: 300px; // Smaller on mobile
-  }
-`;
-
-const MainImageContainer = styled.div`
-  position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 2rem; // Add padding for better spacing
-`;
-
-const MainImage = styled.img`
-  max-width: 100%;
-  max-height: 100%;
-  width: auto; // Add this
-  height: auto; // Add this
-  object-fit: contain;
-  transition: transform 0.3s ease;
-  cursor: zoom-in;
-  
-  &:hover {
-    transform: scale(1.05);
-  }
-`;
-
-const ImagePlaceholder = styled.div`
-  width: 200px; // Set specific width instead of 100%
-  height: 200px; // Set specific height instead of 100%
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 6rem;
-  color: ${props => props.theme.colors.textMuted};
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 12px;
-`;
-
-// Fix thumbnail images
-const Thumbnail = styled.img`
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid ${props => props.active ? props.theme.colors.secondary : 'transparent'};
-  flex-shrink: 0; // Add this to prevent shrinking
-  
-  &:hover {
-    transform: scale(1.05);
-    border-color: ${props => props.theme.colors.secondary};
-  }
-`;
-
-const ThumbnailContainer = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  padding: 1rem;
-  overflow-x: auto;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  
-  // Custom scrollbar for thumbnails
-  &::-webkit-scrollbar {
-    height: 4px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.secondary};
-    border-radius: 2px;
-  }
-`;
-
-
-// Animations
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -165,6 +57,25 @@ const ModalOverlay = styled.div`
   backdrop-filter: blur(5px);
 `;
 
+const ModalContainer = styled.div`
+  position: relative;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  background: ${props => props.theme.colors.background};
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: ${slideUp} 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    max-height: 95vh;
+    margin: 1rem;
+  }
+`;
+
 const CloseButton = styled.button`
   position: absolute;
   top: 1rem;
@@ -188,6 +99,67 @@ const CloseButton = styled.button`
     color: white;
     transform: scale(1.1);
   }
+`;
+
+const ModalContent = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  min-height: 0;
+  
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+  }
+`;
+
+const ImageSection = styled.div`
+  position: relative;
+  background: linear-gradient(135deg, ${props => props.theme.colors.backgroundSecondary} 0%, #f0f0f0 100%);
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+  
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    min-height: 300px;
+  }
+`;
+
+const MainImageContainer = styled.div`
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2rem;
+`;
+
+const MainImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  cursor: zoom-in;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const ImagePlaceholder = styled.div`
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  color: ${props => props.theme.colors.textMuted};
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
 `;
 
 const ImageNavigation = styled.div`
@@ -228,19 +200,41 @@ const NavButton = styled.button`
   }
 `;
 
-const ThumbnailPlaceholder = styled.div`
+const ThumbnailContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${props => props.theme.colors.secondary};
+    border-radius: 2px;
+  }
+`;
+
+// Fix the Thumbnail component to use transient props
+const Thumbnail = styled.img.withConfig({
+  shouldForwardProp: (prop) => !['$active'].includes(prop)
+})`
   width: 60px;
   height: 60px;
-  background: ${props => props.theme.colors.backgroundSecondary};
+  object-fit: cover;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: ${props => props.theme.colors.textMuted};
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid ${props => props.active ? props.theme.colors.secondary : 'transparent'};
+  border: 2px solid ${props => props.$active ? props.theme.colors.secondary : 'transparent'};
+  flex-shrink: 0;
   
   &:hover {
     transform: scale(1.05);
@@ -258,7 +252,9 @@ const BadgeOverlay = styled.div`
   z-index: 5;
 `;
 
-const Badge = styled.span`
+const Badge = styled.span.withConfig({
+  shouldForwardProp: (prop) => !['$type'].includes(prop)
+})`
   padding: 0.4rem 1rem;
   border-radius: 20px;
   font-size: 0.8rem;
@@ -266,23 +262,77 @@ const Badge = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   
-  ${props => props.type === 'sale' && `
+  ${props => props.$type === 'sale' && `
     background: linear-gradient(135deg, ${props.theme.colors.error} 0%, #c53030 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
   `}
   
-  ${props => props.type === 'new' && `
+  ${props => props.$type === 'new' && `
     background: linear-gradient(135deg, ${props.theme.colors.success} 0%, #38a169 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   `}
   
-  ${props => props.type === 'limited' && `
+  ${props => props.$type === 'limited' && `
     background: linear-gradient(135deg, ${props.theme.colors.secondary} 0%, #b8941f 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
   `}
+`;
+
+const ImageLoader = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['$show'].includes(prop)
+})`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: ${props => props.$show ? 'flex' : 'none'};
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: ${props => props.theme.colors.secondary};
+  
+  svg {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+
+const DetailsSection = styled.div`
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: ${props => props.theme.colors.backgroundSecondary};
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${props => props.theme.colors.secondary};
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #b8941f;
+  }
+  
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: 60vh;
+  }
 `;
 
 const ProductHeader = styled.div`
@@ -318,10 +368,13 @@ const StarRating = styled.div`
   gap: 0.2rem;
 `;
 
-const Star = styled(FiStar)`
+// Fix the Star component to use transient props
+const Star = styled(FiStar).withConfig({
+  shouldForwardProp: (prop) => !['$filled'].includes(prop)
+})`
   font-size: 1.1rem;
-  color: ${props => props.filled ? '#FFD700' : props.theme.colors.border};
-  fill: ${props => props.filled ? '#FFD700' : 'none'};
+  color: ${props => props.$filled ? '#FFD700' : props.theme.colors.border};
+  fill: ${props => props.$filled ? '#FFD700' : 'none'};
 `;
 
 const ReviewCount = styled.span`
@@ -359,15 +412,6 @@ const Discount = styled.span`
   background: rgba(239, 68, 68, 0.1);
   padding: 0.3rem 0.8rem;
   border-radius: 16px;
-`;
-
-const StockStatus = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: ${props => props.inStock ? props.theme.colors.success : props.theme.colors.error};
 `;
 
 const ProductDescription = styled.div`
@@ -429,45 +473,6 @@ const QuantitySection = styled.div`
   }
 `;
 
-const QuantityControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-`;
-
-const QuantityButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border: 1px solid ${props => props.theme.colors.border};
-  background: ${props => props.theme.colors.background};
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: ${props => props.theme.colors.secondary};
-    color: white;
-    border-color: ${props => props.theme.colors.secondary};
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const QuantityDisplay = styled.span`
-  min-width: 50px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.2rem;
-`;
-
 const ActionButtons = styled.div`
   display: flex;
   gap: 1rem;
@@ -478,7 +483,10 @@ const ActionButtons = styled.div`
   }
 `;
 
-const AddToCartButton = styled.button`
+// Fix the AddToCartButton component to use transient props
+const AddToCartButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$preOrder'].includes(prop)
+})`
   flex: 2;
   padding: 1rem 1.5rem;
   background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, #1a1a1a 100%);
@@ -504,7 +512,7 @@ const AddToCartButton = styled.button`
     cursor: not-allowed;
   }
   
-  ${props => props.preOrder && `
+  ${props => props.$preOrder && `
     background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
     
     &:hover {
@@ -513,12 +521,15 @@ const AddToCartButton = styled.button`
   `}
 `;
 
-const WishlistButton = styled.button`
+// Fix the WishlistButton component to use transient props
+const WishlistButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['$active'].includes(prop)
+})`
   flex: 1;
   padding: 1rem;
-  background: ${props => props.active ? props.theme.colors.error : 'transparent'};
-  color: ${props => props.active ? 'white' : props.theme.colors.text};
-  border: 2px solid ${props => props.active ? props.theme.colors.error : props.theme.colors.border};
+  background: ${props => props.$active ? props.theme.colors.error : 'transparent'};
+  color: ${props => props.$active ? 'white' : props.theme.colors.text};
+  border: 2px solid ${props => props.$active ? props.theme.colors.error : props.theme.colors.border};
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -529,7 +540,7 @@ const WishlistButton = styled.button`
   gap: 0.5rem;
   
   &:hover {
-    background: ${props => props.active ? '#dc2626' : props.theme.colors.error};
+    background: ${props => props.$active ? '#dc2626' : props.theme.colors.error};
     color: white;
     border-color: ${props => props.theme.colors.error};
     transform: translateY(-2px);
@@ -567,75 +578,21 @@ const InfoItem = styled.div`
   }
 `;
 
-const ImageLoader = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: ${props => props.show ? 'flex' : 'none'};
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: ${props => props.theme.colors.secondary};
-  
-  svg {
-    animation: spin 1s linear infinite;
-  }
-`;
-
-const ModalContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  flex: 1;
-  min-height: 0;
-  
-  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr; // Define rows for mobile
-    overflow: hidden;
-  }
-`;
-
-// Update DetailsSection for mobile:
-const DetailsSection = styled.div`
-  padding: 2rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  
-  // Custom scrollbar styling
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: ${props => props.theme.colors.backgroundSecondary};
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.secondary};
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: #b8941f;
-  }
-  
-  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    padding: 1.5rem;
-    overflow-y: auto; // Keep scrolling on mobile
-    max-height: 60vh; // Limit height on mobile
-  }
-`;
-
 const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [imageLoading, setImageLoading] = useState(true);
-  const [imageError, setImageError] = useState(false)
+  const [imageError, setImageError] = useState(false);
+
+  const {
+    remainingQuantity,
+    isOutOfStock,
+    getStockStatus,
+    canAddToCart,
+    getMaxQuantityForCart
+  } = useInventory(product || {});
 
   if (!isOpen || !product) return null;
 
@@ -649,9 +606,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
     images = [],
     rating = 0,
     reviewCount = 0,
-    gender,
-    badges = [],
-    inStock = true
+    badges = []
   } = product;
 
   const isWishlisted = isInWishlist(id);
@@ -679,15 +634,12 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
     setCurrentImageIndex(index);
   };
 
-  const handleQuantityChange = (change) => {
-    const newQuantity = Math.max(1, quantity + change);
-    setQuantity(newQuantity);
-  };
-
   const handleAddToCart = () => {
-    if (inStock) {
+    if (canAddToCart(quantity)) {
       addToCart(product, quantity);
       onClose();
+    } else {
+      alert('Sorry, not enough stock available.');
     }
   };
 
@@ -710,7 +662,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
 
     for (let i = 0; i < 5; i++) {
       stars.push(
-        <Star key={i} filled={i < fullStars} />
+        <Star key={i} $filled={i < fullStars} />
       );
     }
     return stars;
@@ -748,11 +700,10 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
         <ModalContent>
           {/* Image Section */}
           <ImageSection>
-
             <MainImageContainer>
               {hasImages ? (
                 <>
-                  <ImageLoader show={imageLoading}>
+                  <ImageLoader $show={imageLoading}>
                     <FiRefreshCw />
                   </ImageLoader>
                   {!imageError ? (
@@ -793,14 +744,13 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
               {badges.length > 0 && (
                 <BadgeOverlay>
                   {badges.map((badge, index) => (
-                    <Badge key={index} type={badge.type}>
+                    <Badge key={index} $type={badge.type}>
                       {badge.text}
                     </Badge>
                   ))}
                 </BadgeOverlay>
               )}
             </MainImageContainer>
-
 
             {hasImages && images.length > 1 && (
               <ThumbnailContainer>
@@ -809,7 +759,7 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
                     key={index}
                     src={image}
                     alt={`${name} thumbnail ${index + 1}`}
-                    active={index === currentImageIndex}
+                    $active={index === currentImageIndex}
                     onClick={() => goToImage(index)}
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -846,9 +796,12 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
                   </>
                 )}
               </PriceContainer>
-              <StockStatus inStock={inStock}>
-                {inStock ? '✓ In Stock' : '✗ Out of Stock'}
-              </StockStatus>
+
+              <StockStatus
+                status={getStockStatus().status}
+                label={getStockStatus().label}
+                showIcon={true}
+              />
             </PriceSection>
 
             <ProductDescription>
@@ -865,41 +818,37 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
               </FeatureList>
             </ProductFeatures>
 
-            {inStock && (
+            {!isOutOfStock && (
               <QuantitySection>
-                <h3>Quantity</h3>
-                <QuantityControls>
-                  <QuantityButton
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
-                  >
-                    -
-                  </QuantityButton>
-                  <QuantityDisplay>{quantity}</QuantityDisplay>
-                  <QuantityButton
-                    onClick={() => handleQuantityChange(1)}
-                  >
-                    +
-                  </QuantityButton>
-                </QuantityControls>
+                <QuantitySelector
+                  value={quantity}
+                  onChange={setQuantity}
+                  min={1}
+                  max={getMaxQuantityForCart()}
+                  availableQuantity={remainingQuantity}
+                  showStockInfo={true}
+                />
               </QuantitySection>
             )}
 
             <ActionButtons>
-              {inStock ? (
-                <AddToCartButton onClick={handleAddToCart}>
+              {!isOutOfStock ? (
+                <AddToCartButton
+                  onClick={handleAddToCart}
+                  disabled={!canAddToCart(quantity)}
+                >
                   <FiShoppingCart />
-                  Add to Cart
+                  Add {quantity} to Cart
                 </AddToCartButton>
               ) : (
-                <AddToCartButton preOrder onClick={handlePreOrder}>
+                <AddToCartButton $preOrder onClick={handlePreOrder}>
                   <FiPackage />
                   Pre-Order
                 </AddToCartButton>
               )}
 
               <WishlistButton
-                active={isWishlisted}
+                $active={isWishlisted}
                 onClick={handleWishlistToggle}
               >
                 <FiHeart />

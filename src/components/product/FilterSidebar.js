@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import { FiX, FiStar } from 'react-icons/fi';
 import { useFilter } from '../../context/FilterContext';
 
-const SidebarContainer = styled.div`
+const SidebarContainer = styled.div.attrs(({ $isOpen }) => ({
+  'data-open': $isOpen
+}))`
   background: ${props => props.theme.colors.background};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 12px;
@@ -22,7 +24,7 @@ const SidebarContainer = styled.div`
     z-index: 1000;
     border-radius: 0;
     overflow-y: auto;
-    transform: ${props => props.isOpen ? 'translateX(0)' : 'translateX(-100%)'};
+    transform: ${props => props.$isOpen ? 'translateX(0)' : 'translateX(-100%)'};
     transition: transform 0.3s ease;
     padding: 1.5rem;
   }
@@ -199,7 +201,7 @@ const FilterSidebar = ({ isOpen, onClose, brands }) => {
   };
 
   return (
-    <SidebarContainer isOpen={isOpen}>
+    <SidebarContainer $isOpen={isOpen}>
       <SidebarHeader>
         <h3>Filters</h3>
         <CloseButton onClick={onClose}>
