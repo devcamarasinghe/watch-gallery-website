@@ -13,17 +13,18 @@ export const showToast = {
       secondary: '#4BB543',
     },
   }),
-  
+
   error: (message) => toast.error(message, {
     style: {
-      background: '#FF3333',
+      borderRadius: '20px',
+      background: '#D22B2B',
       color: '#fff',
     },
   }),
-  
+
   promise: (promise, messages) => toast.promise(promise, messages),
-  
+
   loading: (message) => toast.loading(message),
-  
+
   dismiss: () => toast.dismiss(),
 };

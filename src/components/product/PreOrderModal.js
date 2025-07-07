@@ -1,12 +1,12 @@
 // src/components/product/PreOrderModal.js
 import React, { useState } from 'react';
-import styled, { keyframes, css } from 'styled-components';
-import { 
-  FiX, 
-  FiUser, 
-  FiMail, 
-  FiPhone, 
-  FiMessageCircle, 
+import styled, { keyframes } from 'styled-components';
+import {
+  FiX,
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiMessageCircle,
   FiPackage,
   FiChevronLeft,
   FiChevronRight,
@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { usePreOrder } from '../../context/PreOrderContext';
+import { showToast } from '../../utils/toast';
 
 // Animations
 const fadeIn = keyframes`
@@ -608,14 +609,14 @@ const PreOrderModal = ({ isOpen, onClose, product }) => {
   const { user, isAuthenticated } = useAuth();
   const { addPreOrder } = usePreOrder();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+
   const [formData, setFormData] = useState({
     name: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
     email: user?.email || '',
     phone: user?.phone || '',
     quantity: 1
   });
-  
+
   const [errors, setErrors] = useState({});
 
   // WhatsApp business number
@@ -628,7 +629,6 @@ const PreOrderModal = ({ isOpen, onClose, product }) => {
     brand,
     price,
     originalPrice,
-    discount,
     images = [],
     rating = 0,
     reviewCount = 0
@@ -664,7 +664,7 @@ const PreOrderModal = ({ isOpen, onClose, product }) => {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -684,7 +684,7 @@ const PreOrderModal = ({ isOpen, onClose, product }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -692,14 +692,14 @@ const PreOrderModal = ({ isOpen, onClose, product }) => {
       newErrors.email = 'Please enter a valid email';
     }
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const generatePreOrderMessage = () => {
     const preOrderNumber = `PRE${Date.now()}`;
-    
+
     const message = `🔔 *Pre-Order Request - ${preOrderNumber}*
 
 👤 *Customer Details:*
@@ -728,9 +728,9 @@ Thank you! 🙏`;
   const handlePreOrderSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!validateForm()) return;
-    
+
     // Add to pre-orders if user is authenticated
     if (isAuthenticated) {
       const preOrderData = {
@@ -742,28 +742,29 @@ Thank you! 🙏`;
           phone: formData.phone
         }
       };
-      
+
       addPreOrder(preOrderData);
     }
-    
+
     // Generate WhatsApp message
     const message = generatePreOrderMessage();
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${message}`;
-    
+
     // Open WhatsApp
     window.open(whatsappUrl, '_blank');
-    
+
     // Close modal
     onClose();
-    
+
     // Show success message
-    alert('Pre-order request sent! We will contact you when this watch is back in stock.');
+    showToast.success(`Pre-order request sent! We will contact you when this watch is back in stock`);
+    return true;
   };
 
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    
+
     for (let i = 0; i < 5; i++) {
       stars.push(
         <Star key={i} filled={i < fullStars} />
@@ -794,13 +795,13 @@ Thank you! 🙏`;
                   />
                   {images.length > 1 && (
                     <ImageNavigation>
-                      <NavButton 
+                      <NavButton
                         onClick={prevImage}
                         disabled={currentImageIndex === 0}
                       >
                         <FiChevronLeft />
                       </NavButton>
-                      <NavButton 
+                      <NavButton
                         onClick={nextImage}
                         disabled={currentImageIndex === images.length - 1}
                       >
@@ -939,7 +940,7 @@ Thank you! 🙏`;
               <QuantitySection>
                 <h3>Quantity</h3>
                 <QuantityControls>
-                  <QuantityButton 
+                  <QuantityButton
                     type="button"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={formData.quantity <= 1}
@@ -947,7 +948,7 @@ Thank you! 🙏`;
                     -
                   </QuantityButton>
                   <QuantityDisplay>{formData.quantity}</QuantityDisplay>
-                  <QuantityButton 
+                  <QuantityButton
                     type="button"
                     onClick={() => handleQuantityChange(1)}
                   >

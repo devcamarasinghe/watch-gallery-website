@@ -19,6 +19,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import QuantitySelector from '../../components/common/QuantitySelector';
 import StockStatus from '../../components/common/StockStatus';
 import { useInventory } from '../../hooks/useInventory';
+import { showToast } from '../../utils/toast';
 
 // Animations
 const slideUp = keyframes`
@@ -639,7 +640,8 @@ const QuickViewModal = ({ isOpen, onClose, product, onPreOrderClick }) => {
       addToCart(product, quantity);
       onClose();
     } else {
-      alert('Sorry, not enough stock available.');
+      showToast.error(`Sorry, not enough stock available`);
+      return false;
     }
   };
 

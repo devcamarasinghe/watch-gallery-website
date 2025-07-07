@@ -1,18 +1,19 @@
 // src/components/pages/CheckoutPage.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { 
-  FiArrowLeft, 
-  FiUser, 
-  FiMail, 
-  FiPhone, 
-  FiMapPin, 
+import {
+  FiArrowLeft,
+  FiUser,
+  // FiMail,
+  // FiPhone,
+  FiMapPin,
   FiMessageCircle,
-  FiCreditCard,
+  // FiCreditCard,
   FiAlertCircle
 } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { showToast } from '../utils/toast';
 
 const CheckoutContainer = styled.div`
   max-width: 1200px;
@@ -277,9 +278,9 @@ const WhatsAppButton = styled.button`
 `;
 
 const CheckoutPage = () => {
-  const { items, total, clearCart } = useCart();
-  const { user, isAuthenticated } = useAuth();
-  
+  const { items, total } = useCart();
+  const { user } = useAuth();
+
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -291,7 +292,7 @@ const CheckoutPage = () => {
     zipCode: user?.address?.zipCode || '',
     notes: ''
   });
-  
+
   const [errors, setErrors] = useState({});
   const [orderNumber, setOrderNumber] = useState('');
 
@@ -310,7 +311,7 @@ const CheckoutPage = () => {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -322,7 +323,7 @@ const CheckoutPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
     if (!formData.email.trim()) {
@@ -335,7 +336,7 @@ const CheckoutPage = () => {
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
     if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -343,11 +344,11 @@ const CheckoutPage = () => {
   const generateWhatsAppMessage = () => {
     const orderNum = orderNumber || generateOrderNumber();
     setOrderNumber(orderNum);
-    
-    const itemsList = items.map(item => 
+
+    const itemsList = items.map(item =>
       `• ${item.name} (${item.brand}) - Qty: ${item.quantity} - $${item.price * item.quantity}`
     ).join('\n');
-    
+
     const message = `🛒 *New Watch Order - ${orderNum}*
 
 👤 *Customer Details:*
@@ -375,22 +376,23 @@ Thank you! 🙏`;
 
   const handleWhatsAppOrder = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     const message = generateWhatsAppMessage();
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${message}`;
-    
+
     // Open WhatsApp
     window.open(whatsappUrl, '_blank');
-    
+
     // Optional: Clear cart after successful order
     // clearCart();
-    
+
     // Optional: Show success message or redirect
-    alert('Order sent via WhatsApp! We will contact you shortly with payment details.');
+    showToast.success(`Order sent via WhatsApp! We will contact you shortly with payment details`);
+    return true;
   };
 
   if (items.length === 0) {
@@ -433,7 +435,7 @@ Thank you! 🙏`;
               <FiUser />
               Customer Information
             </SectionTitle>
-            
+
             <FormGrid>
               <FormGroup>
                 <FormLabel>First Name *</FormLabel>
@@ -446,7 +448,7 @@ Thank you! 🙏`;
                 />
                 {errors.firstName && <ErrorMessage>{errors.firstName}</ErrorMessage>}
               </FormGroup>
-              
+
               <FormGroup>
                 <FormLabel>Last Name *</FormLabel>
                 <FormInput
@@ -459,7 +461,7 @@ Thank you! 🙏`;
                 {errors.lastName && <ErrorMessage>{errors.lastName}</ErrorMessage>}
               </FormGroup>
             </FormGrid>
-            
+
             <FormGrid>
               <FormGroup>
                 <FormLabel>Email Address *</FormLabel>
@@ -472,7 +474,7 @@ Thank you! 🙏`;
                 />
                 {errors.email && <ErrorMessage>{errors.email}</ErrorMessage>}
               </FormGroup>
-              
+
               <FormGroup>
                 <FormLabel>Phone Number *</FormLabel>
                 <FormInput
@@ -493,7 +495,7 @@ Thank you! 🙏`;
               <FiMapPin />
               Shipping Address
             </SectionTitle>
-            
+
             <FormGroup style={{ marginBottom: '1rem' }}>
               <FormLabel>Street Address *</FormLabel>
               <FormInput
@@ -505,7 +507,7 @@ Thank you! 🙏`;
               />
               {errors.address && <ErrorMessage>{errors.address}</ErrorMessage>}
             </FormGroup>
-            
+
             <FormGrid>
               <FormGroup>
                 <FormLabel>City *</FormLabel>
@@ -518,7 +520,7 @@ Thank you! 🙏`;
                 />
                 {errors.city && <ErrorMessage>{errors.city}</ErrorMessage>}
               </FormGroup>
-              
+
               <FormGroup>
                 <FormLabel>State *</FormLabel>
                 <FormInput
@@ -531,7 +533,7 @@ Thank you! 🙏`;
                 {errors.state && <ErrorMessage>{errors.state}</ErrorMessage>}
               </FormGroup>
             </FormGrid>
-            
+
             <FormGroup>
               <FormLabel>ZIP Code *</FormLabel>
               <FormInput
@@ -565,7 +567,7 @@ Thank you! 🙏`;
         {/* Order Summary */}
         <OrderSummary>
           <SummaryTitle>Order Summary</SummaryTitle>
-          
+
           {items.map(item => (
             <OrderItem key={item.id}>
               <ItemImage>⌚</ItemImage>
@@ -577,7 +579,7 @@ Thank you! 🙏`;
               </ItemDetails>
             </OrderItem>
           ))}
-          
+
           <SummaryRow>
             <span>Subtotal:</span>
             <span>${subtotal.toFixed(2)}</span>
@@ -594,7 +596,7 @@ Thank you! 🙏`;
             <span>Total:</span>
             <span>${finalTotal.toFixed(2)}</span>
           </SummaryRow>
-          
+
           {/* Payment Notice */}
           <PaymentNotice>
             <h4>
@@ -602,15 +604,15 @@ Thank you! 🙏`;
               Payment Method
             </h4>
             <p>
-              We currently accept <strong>Bank Transfer</strong> payments only. 
-              After placing your order via WhatsApp, we'll provide you with our 
+              We currently accept <strong>Bank Transfer</strong> payments only.
+              After placing your order via WhatsApp, we'll provide you with our
               bank details for payment.
             </p>
             <p>
               WhatsApp: <span className="whatsapp-number">{WHATSAPP_NUMBER}</span>
             </p>
           </PaymentNotice>
-          
+
           <WhatsAppButton type="submit" onClick={handleWhatsAppOrder}>
             <FiMessageCircle />
             Place Order via WhatsApp

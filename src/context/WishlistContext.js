@@ -97,12 +97,7 @@ export const WishlistProvider = ({ children }) => {
 
   const addToWishlist = (product) => {
     if (!isAuthenticated) {
-      showToast.success(
-        <div className="flex flex-col gap-1">
-          <span>Please sign in to add items to your wishlist</span>
-        </div>,
-        // { duration: 100 }
-      );
+      showToast.error(`Please sign in to add items to your wishlist`);
       return false;
     }
 
