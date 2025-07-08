@@ -309,7 +309,7 @@ const LoginForm = ({ onSwitchToRegister, onClose }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  
+
   const { login, isLoading, error, clearError } = useAuth();
 
   const handleOverlayClick = (e) => {
@@ -328,7 +328,7 @@ const LoginForm = ({ onSwitchToRegister, onClose }) => {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear field error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -336,39 +336,46 @@ const LoginForm = ({ onSwitchToRegister, onClose }) => {
         [name]: ''
       }));
     }
-    
+
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+
     // Clear auth error
     if (error) {
-      clearError();
+      clearError(); // This will reset the error state
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     const result = await login(formData.email, formData.password);
-    
+
     if (result.success && onClose) {
       onClose();
     }
