@@ -32,6 +32,8 @@ const authReducer = (state, action) => {
       return { ...state, user: null, isAuthenticated: false, isLoading: false, error: null };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
+    case 'CLEAR_ERROR': // Added this case
+      return { ...state, error: null }; // Clear the error
     default:
       return state;
   }
@@ -90,14 +92,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
   const logout = async () => {
     await signOut(auth);
     dispatch({ type: 'LOGOUT' });
   };
 
+  const clearError = () => {
+    dispatch({ type: 'CLEAR_ERROR' });
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout }}>
+    <AuthContext.Provider value={{ ...state, login, register, logout, clearError }}>
       {children}
     </AuthContext.Provider>
   );
@@ -108,5 +113,5 @@ export const useAuth = () => {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+  return context; // Now includes `clearError` as part of the context value
 };
