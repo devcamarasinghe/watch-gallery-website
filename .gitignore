@@ -11,6 +11,10 @@
 # firebase
 /src/firebase.js
 
+# Environment variables
+.env.development
+.env.production
+
 # production
 /build
 
