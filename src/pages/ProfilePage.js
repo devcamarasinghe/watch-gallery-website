@@ -210,10 +210,10 @@ const ProfilePage = () => {
     <ProfileContainer>
       <ProfileHeader>
         <h1>My Profile</h1>
-        <p>Manage your account information and preferences</p>
+        <p>⚠️ Please note this is a Coming Soon ! Manage your account information and preferences</p>
       </ProfileHeader>
 
-      <ProfileContent>
+      {/* <ProfileContent>
         <ProfileSection>
           <SectionTitle>
             Personal Information
@@ -360,7 +360,7 @@ const ProfilePage = () => {
             </div>
           </InfoItem>
         </ProfileSection>
-      </ProfileContent>
+      </ProfileContent> */}
     </ProfileContainer>
   );
 };

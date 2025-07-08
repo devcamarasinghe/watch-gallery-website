@@ -7,6 +7,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useInventory } from '../../hooks/useInventory';
 import StockStatus from '../common/StockStatus';
 import QuantitySelector from '../common/QuantitySelector';
+import { showToast } from '../../utils/toast';
 
 const ActionButtons = styled.div`
   position: absolute;
@@ -531,7 +532,8 @@ const ProductCard = ({ product, onPreOrderClick, onQuickViewClick }) => {
       addToCart(product, quantity);
       console.log(`Added ${quantity} ${product.name} to cart`);
     } else {
-      alert('Sorry, this item is out of stock or you have reached the maximum available quantity.');
+      showToast.error(`Sorry, this item is out of stock or you have reached the maximum available quantity`);
+      return false;
     }
   };
 

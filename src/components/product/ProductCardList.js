@@ -7,6 +7,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useInventory } from '../../hooks/useInventory'; // Import the useInventory hook
 import StockStatus from '../common/StockStatus'; // Import StockStatus component
 import QuantitySelector from '../common/QuantitySelector';
+import { showToast } from '../../utils/toast';
 
 // Update the ListCardContainer to center vertically
 const ListCardContainer = styled.div`
@@ -159,20 +160,6 @@ const Indicator = styled.button.withConfig({
   &:hover {
     background: ${props => props.theme.colors.secondary};
     transform: scale(1.2);
-  }
-`;
-
-const ImageSection = styled.div`
-  position: relative;
-  width: 200px;
-  height: 150px;
-  flex-shrink: 0;
-  background: ${props => props.theme.colors.backgroundSecondary};
-  overflow: hidden;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    width: 120px;
-    height: 120px;
   }
 `;
 
@@ -493,7 +480,8 @@ const ProductCardList = ({ product, onPreOrderClick, onQuickViewClick }) => {
       addToCart(product, quantity);
       console.log(`Added ${quantity} ${product.name} to cart`);
     } else {
-      alert('Sorry, this item is out of stock or you have reached the maximum available quantity.');
+      showToast.error(`Sorry, this item is out of stock or you have reached the maximum available quantity`);
+      return false;
     }
   };
 

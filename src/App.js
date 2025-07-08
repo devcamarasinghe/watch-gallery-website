@@ -14,6 +14,7 @@ import CartDropdown from './components/cart/CartDropdown';
 import AuthModal from './components/auth/AuthModal';
 import Router from './components/Router';
 import { sampleProducts } from './data/products';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 function App() {
@@ -47,11 +48,44 @@ function App() {
                       />
                       <Footer />
                       <CartDropdown />
+
                       <AuthModal
                         isOpen={authModal.isOpen}
                         onClose={handleAuthModalClose}
                         initialMode={authModal.mode}
                       />
+
+                      <Toaster
+                        position="top-center"
+                        toastOptions={{
+                          className: 'custom-toast',
+                          duration: 4000,
+                          style: {
+                            padding: '16px 24px',
+                            borderRadius: '12px',
+                            fontWeight: 600,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                          },
+                          success: {
+                            style: {
+                              background: '#10B981',
+                              color: '#fff',
+                            },
+                            iconTheme: {
+                              primary: '#fff',
+                              secondary: '#10B981',
+                            },
+                          },
+                          error: {
+                            style: {
+                              background: '#EF4444',
+                              color: '#fff',
+                            },
+                          },
+                        }}
+                      />
+
                     </div>
                   </PaginationProvider>
                 </FilterProvider>

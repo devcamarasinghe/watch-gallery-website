@@ -10,7 +10,8 @@ import {
   FiMapPin,
   FiCreditCard,
   FiShield,
-  FiTruck
+  FiTruck,
+  FiTwitch
 } from 'react-icons/fi';
 
 const FooterContainer = styled.footer`
@@ -226,7 +227,7 @@ const Footer = () => {
         <FooterTop>
 
           {/* Quick Links */}
-          <FooterSection>
+          {/* <FooterSection>
             <h3>Quick Links</h3>
             <FooterLinks>
               <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('catalog'); }}>Home</a></li>
@@ -235,10 +236,10 @@ const Footer = () => {
               <li><a href="#" onClick={(e) => e.preventDefault()}>Brands</a></li>
               <li><a href="#" onClick={(e) => e.preventDefault()}>Sale</a></li>
             </FooterLinks>
-          </FooterSection>
+          </FooterSection> */}
 
           {/* Customer Service */}
-          <FooterSection>
+          {/* <FooterSection>
             <h3>Customer Service</h3>
             <FooterLinks>
               <li><a href="#" onClick={(e) => { e.preventDefault(); window.navigateTo('contact'); }}>Contact Us</a></li>
@@ -248,24 +249,24 @@ const Footer = () => {
               <li><a href="#" onClick={(e) => e.preventDefault()}>Size Guide</a></li>
               <li><a href="#" onClick={(e) => e.preventDefault()}>FAQ</a></li>
             </FooterLinks>
-          </FooterSection>
+          </FooterSection> */}
 
 
           {/* Quick Links */}
-          <FooterSection>
+          {/* <FooterSection>
             <h3>Quick Links</h3>
-            <FooterLinks>
-              <li><a href="/">Home</a></li>
-              <li><a href="/catalog">All Watches</a></li>
+            <FooterLinks> */}
+          {/* <li><a href="/">Home</a></li> */}
+          {/* <li><a href="/catalog">All Watches</a></li>
               <li><a href="/catalog?gender=men">Men's Watches</a></li>
-              <li><a href="/catalog?gender=women">Women's Watches</a></li>
-              <li><a href="/brands">Brands</a></li>
-              <li><a href="/sale">Sale</a></li>
-            </FooterLinks>
-          </FooterSection>
+              <li><a href="/catalog?gender=women">Women's Watches</a></li> */}
+          {/* <li><a href="/brands">Brands</a></li> */}
+          {/* <li><a href="/sale">Sale</a></li> */}
+          {/* </FooterLinks>
+          </FooterSection> */}
 
           {/* Customer Service */}
-          <FooterSection>
+          {/* <FooterSection>
             <h3>Customer Service</h3>
             <FooterLinks>
               <li><a href="/contact">Contact Us</a></li>
@@ -275,25 +276,34 @@ const Footer = () => {
               <li><a href="/size-guide">Size Guide</a></li>
               <li><a href="/faq">FAQ</a></li>
             </FooterLinks>
-          </FooterSection>
+          </FooterSection> */}
 
           {/* Contact & Newsletter */}
           <FooterSection>
             <h3>Get In Touch</h3>
             <ContactInfo>
               <FiPhone />
-              <span>+1 (555) 123-4567</span>
+              <span>+94 (77) 015-3464</span>
             </ContactInfo>
             <ContactInfo>
               <FiMail />
-              <span>info@watchshop.com</span>
+              <span>luxwatchlk@gmail.com</span>
+            </ContactInfo>
+            <ContactInfo>
+              <FiTwitch />
+              <a href="https://wa.me/+94770153464"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'white', textDecoration: 'none' }}>
+                <span>WhatsApp - wa.me/+94770153464</span>
+              </a>
             </ContactInfo>
             <ContactInfo>
               <FiMapPin />
-              <span>123 Luxury Ave, New York, NY 10001</span>
+              <span>Colombo, Sri Lanka</span>
             </ContactInfo>
 
-            <h3 style={{ marginTop: '1.5rem' }}>Newsletter</h3>
+            {/* <h3 style={{ marginTop: '1.5rem' }}>Newsletter</h3>
             <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>
               Subscribe for exclusive offers and new arrivals
             </p>
@@ -306,7 +316,7 @@ const Footer = () => {
               <NewsletterButton type="submit">
                 Subscribe
               </NewsletterButton>
-            </NewsletterForm>
+            </NewsletterForm> */}
 
             <SocialLinks>
               <SocialIcon href="#" aria-label="Facebook">
@@ -326,17 +336,17 @@ const Footer = () => {
           <div>
             <p>&copy; 2025 LuxWatch. All rights reserved.</p>
             <div style={{ marginTop: '0.5rem' }}>
-              <a href="/privacy" style={{ color: 'inherit', marginRight: '1rem' }}>Privacy Policy</a>
-              <a href="/terms" style={{ color: 'inherit' }}>Terms of Service</a>
+              <a href="/#" style={{ color: 'inherit', marginRight: '1rem' }}>Privacy Policy</a>
+              <a href="/#" style={{ color: 'inherit' }}>Terms of Service</a>
             </div>
           </div>
 
           <PaymentMethods>
             <span>We Accept:</span>
-            <PaymentIcon>VISA</PaymentIcon>
-            <PaymentIcon>MC</PaymentIcon>
+            <PaymentIcon>Bank Transfers</PaymentIcon>
+            {/* <PaymentIcon>MC</PaymentIcon>
             <PaymentIcon>AMEX</PaymentIcon>
-            <PaymentIcon>PAYPAL</PaymentIcon>
+            <PaymentIcon>PAYPAL</PaymentIcon> */}
           </PaymentMethods>
         </FooterBottom>
       </FooterContent>

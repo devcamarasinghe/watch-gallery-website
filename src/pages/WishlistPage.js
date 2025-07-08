@@ -1,10 +1,10 @@
 // src/components/pages/WishlistPage.js
 import React from 'react';
 import styled from 'styled-components';
-import { 
-  FiHeart, 
-  FiShoppingCart, 
-  FiTrash2, 
+import {
+  FiHeart,
+  FiShoppingCart,
+  FiTrash2,
   FiArrowLeft,
   FiEye
 } from 'react-icons/fi';
@@ -204,7 +204,7 @@ const StockStatus = styled.span`
   margin-bottom: 1rem;
   display: inline-block;
   
-  ${props => props.inStock ? `
+  ${props => props.$inStock ? `
     background: rgba(16, 185, 129, 0.1);
     color: ${props.theme.colors.success};
   ` : `
@@ -320,9 +320,9 @@ const WishlistPage = ({ onAuthModalOpen }) => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -351,7 +351,7 @@ const WishlistPage = ({ onAuthModalOpen }) => {
             </BackButton>
           </HeaderLeft>
         </WishlistHeader>
-        
+
         <SignInPrompt>
           <h2>Sign In Required</h2>
           <p>Please sign in to view and manage your wishlist</p>
@@ -379,7 +379,7 @@ const WishlistPage = ({ onAuthModalOpen }) => {
             </WishlistTitle>
           </HeaderLeft>
         </WishlistHeader>
-        
+
         <EmptyWishlist>
           <div className="icon">💝</div>
           <h2>Your wishlist is empty</h2>
@@ -406,7 +406,7 @@ const WishlistPage = ({ onAuthModalOpen }) => {
             <ItemCount>({itemCount} items)</ItemCount>
           </WishlistTitle>
         </HeaderLeft>
-        
+
         <ClearAllButton onClick={handleClearAll}>
           Clear All
         </ClearAllButton>
@@ -417,7 +417,7 @@ const WishlistPage = ({ onAuthModalOpen }) => {
           <WishlistCard key={item.id}>
             <CardImage>
               ⌚
-              <RemoveButton 
+              <RemoveButton
                 onClick={() => removeFromWishlist(item.id)}
                 title="Remove from wishlist"
               >
@@ -429,24 +429,24 @@ const WishlistPage = ({ onAuthModalOpen }) => {
                 </AddedDate>
               )}
             </CardImage>
-            
+
             <CardContent>
               <ProductBrand>{item.brand}</ProductBrand>
               <ProductName>{item.name}</ProductName>
-              
+
               <ProductPrice>
                 <span className="current-price">${item.price}</span>
                 {item.originalPrice && item.originalPrice > item.price && (
                   <span className="original-price">${item.originalPrice}</span>
                 )}
               </ProductPrice>
-              
-              <StockStatus inStock={item.inStock}>
+
+              <StockStatus $inStock={item.inStock}>
                 {item.inStock ? 'In Stock' : 'Out of Stock'}
               </StockStatus>
-              
+
               <CardActions>
-                <ActionButton 
+                <ActionButton
                   className="primary"
                   onClick={() => handleAddToCart(item)}
                   disabled={!item.inStock}
@@ -454,10 +454,10 @@ const WishlistPage = ({ onAuthModalOpen }) => {
                   <FiShoppingCart />
                   {item.inStock ? 'Add to Cart' : 'Out of Stock'}
                 </ActionButton>
-                
-                <ActionButton 
+
+                <ActionButton
                   className="secondary"
-                  onClick={() => {/* Navigate to product detail */}}
+                  onClick={() => {/* Navigate to product detail */ }}
                 >
                   <FiEye />
                   View

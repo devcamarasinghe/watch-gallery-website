@@ -1,6 +1,7 @@
 // src/context/WishlistContext.js
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { showToast } from '../utils/toast';
 
 const WishlistContext = createContext();
 
@@ -16,14 +17,14 @@ const wishlistReducer = (state, action) => {
         ...state,
         isLoading: action.payload
       };
-    
+
     case 'LOAD_WISHLIST':
       return {
         ...state,
         items: action.payload,
         isLoading: false
       };
-    
+
     case 'ADD_TO_WISHLIST':
       const existingItem = state.items.find(item => item.id === action.payload.id);
       if (existingItem) {
@@ -33,19 +34,19 @@ const wishlistReducer = (state, action) => {
         ...state,
         items: [...state.items, { ...action.payload, addedAt: new Date().toISOString() }]
       };
-    
+
     case 'REMOVE_FROM_WISHLIST':
       return {
         ...state,
         items: state.items.filter(item => item.id !== action.payload)
       };
-    
+
     case 'CLEAR_WISHLIST':
       return {
         ...state,
         items: []
       };
-    
+
     default:
       return state;
   }
@@ -75,13 +76,13 @@ export const WishlistProvider = ({ children }) => {
 
   const loadWishlist = () => {
     if (!user) return;
-    
+
     dispatch({ type: 'SET_LOADING', payload: true });
-    
+
     try {
       const wishlistKey = `watchshop-wishlist-${user.id}`;
       const savedWishlist = localStorage.getItem(wishlistKey);
-      
+
       if (savedWishlist) {
         const parsedWishlist = JSON.parse(savedWishlist);
         dispatch({ type: 'LOAD_WISHLIST', payload: parsedWishlist });
@@ -96,11 +97,12 @@ export const WishlistProvider = ({ children }) => {
 
   const addToWishlist = (product) => {
     if (!isAuthenticated) {
-      alert('Please sign in to add items to your wishlist');
+      showToast.error(`Please sign in to add items to your wishlist`);
       return false;
     }
-    
+
     dispatch({ type: 'ADD_TO_WISHLIST', payload: product });
+    showToast.success(`${product.name} added to wishlist!`);
     return true;
   };
 

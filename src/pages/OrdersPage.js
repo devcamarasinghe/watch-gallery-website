@@ -1,11 +1,11 @@
 // src/components/pages/OrdersPage.js
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { 
-  FiArrowLeft, 
-  FiPackage, 
-  FiTruck, 
-  FiCheck, 
+import {
+  FiArrowLeft,
+  FiPackage,
+  FiTruck,
+  FiCheck,
   FiClock,
   FiEye,
   FiRefreshCw,
@@ -15,6 +15,7 @@ import {
 import { useOrders } from '../context/OrdersContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { showToast } from '../utils/toast';
 
 const OrdersContainer = styled.div`
   max-width: 1200px;
@@ -368,14 +369,17 @@ const OrdersPage = ({ onAuthModalOpen }) => {
     order.items.forEach(item => {
       addToCart(item, item.quantity);
     });
-    alert(`${order.items.length} item(s) added to cart!`);
+    showToast.success(`${order.items.length} item(s) added to cart!`);
+    return true;
   };
 
   const handleTrackOrder = (order) => {
     if (order.trackingNumber) {
-      alert(`Tracking Number: ${order.trackingNumber}\n\nIn a real app, this would open the shipping carrier's tracking page.`);
+      showToast.success(`Tracking Number: ${order.trackingNumber}\n\nIn a real app, this would open the shipping carrier's tracking page`);
+      return true;
     } else {
-      alert('Tracking information is not yet available for this order.');
+      showToast.success(`Tracking information is not yet available for this order`);
+      return true;
     }
   };
 
@@ -390,7 +394,7 @@ const OrdersPage = ({ onAuthModalOpen }) => {
             </BackButton>
           </HeaderLeft>
         </OrdersHeader>
-        
+
         <EmptyOrders>
           <div className="icon">🔐</div>
           <h2>Sign In Required</h2>
@@ -438,29 +442,32 @@ const OrdersPage = ({ onAuthModalOpen }) => {
             My Orders
           </OrdersTitle>
         </HeaderLeft>
+        <spa>
+        ⚠️ Please note: These are sample data. The actual content will be available soon. Thank you for your patience!
+        </spa>
       </OrdersHeader>
 
-      <FilterTabs>
-        <FilterTab 
-          active={activeFilter === 'all'} 
+      {/* <FilterTabs>
+        <FilterTab
+          active={activeFilter === 'all'}
           onClick={() => setActiveFilter('all')}
         >
           All Orders ({orders.length})
         </FilterTab>
-        <FilterTab 
-          active={activeFilter === 'processing'} 
+        <FilterTab
+          active={activeFilter === 'processing'}
           onClick={() => setActiveFilter('processing')}
         >
           Processing ({orders.filter(o => o.status === 'processing').length})
         </FilterTab>
-        <FilterTab 
-          active={activeFilter === 'shipped'} 
+        <FilterTab
+          active={activeFilter === 'shipped'}
           onClick={() => setActiveFilter('shipped')}
         >
           Shipped ({orders.filter(o => o.status === 'shipped').length})
         </FilterTab>
-        <FilterTab 
-          active={activeFilter === 'delivered'} 
+        <FilterTab
+          active={activeFilter === 'delivered'}
           onClick={() => setActiveFilter('delivered')}
         >
           Delivered ({orders.filter(o => o.status === 'delivered').length})
@@ -472,8 +479,8 @@ const OrdersPage = ({ onAuthModalOpen }) => {
           <div className="icon">📦</div>
           <h2>No Orders Found</h2>
           <p>
-            {activeFilter === 'all' 
-              ? "You haven't placed any orders yet" 
+            {activeFilter === 'all'
+              ? "You haven't placed any orders yet"
               : `No ${activeFilter} orders found`
             }
           </p>
@@ -490,17 +497,17 @@ const OrdersPage = ({ onAuthModalOpen }) => {
                   <h4>Order Number</h4>
                   <p>{order.orderNumber}</p>
                 </OrderInfo>
-                
+
                 <OrderInfo>
                   <h4>Order Date</h4>
                   <p>{formatDate(order.date)}</p>
                 </OrderInfo>
-                
+
                 <OrderInfo>
                   <h4>Total</h4>
                   <p>${order.total.toFixed(2)}</p>
                 </OrderInfo>
-                
+
                 <OrderInfo>
                   <h4>Status</h4>
                   <OrderStatus>
@@ -530,12 +537,12 @@ const OrdersPage = ({ onAuthModalOpen }) => {
                     <FiTruck />
                     Track Order
                   </ActionButton>
-                  
+
                   <ActionButton onClick={() => handleReorder(order)}>
                     <FiShoppingCart />
                     Reorder
                   </ActionButton>
-                  
+
                   <ActionButton className="primary">
                     <FiEye />
                     View Details
@@ -545,7 +552,7 @@ const OrdersPage = ({ onAuthModalOpen }) => {
             </OrderCard>
           ))}
         </OrdersList>
-      )}
+      )} */}
     </OrdersContainer>
   );
 };
