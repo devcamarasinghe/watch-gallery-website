@@ -1,70 +1,73 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# LuxWatch Online
 
-## Available Scripts
+LuxWatch Online is a modern e-commerce web application for luxury watches, built with React. It features a product catalog, shopping cart, authentication, wishlist, order management, and more, providing a seamless shopping experience.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Browse luxury watches with detailed images and descriptions
+- Filter and paginate products
+- Add watches to cart and wishlist
+- User authentication (login/register)
+- Checkout and order management
+- Responsive design
+- Toast notifications
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Project Structure
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+luxwatch_online/
+├── public/           # Static assets and images
+├── src/              # Source code
+│   ├── components/   # UI components (auth, cart, product, layout, etc.)
+│   ├── context/      # React context providers (auth, cart, filter, etc.)
+│   ├── data/         # Static data (products)
+│   ├── hooks/        # Custom React hooks
+│   ├── pages/        # Application pages (About, Catalog, Checkout, etc.)
+│   ├── services/     # Service logic (API, etc.)
+│   ├── theme/        # Theme and color configuration
+│   └── utils/        # Utility functions
+├── build/            # Production build output
+├── package.json      # Project dependencies and scripts
+└── README.md         # Project documentation
+```
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Install dependencies**
+   ```
+   npm install
+   ```
+2. **Run the development server**
+   ```
+   npm start
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### `npm run build`
+3. **Build for production**
+   ```
+   npm run build
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4. **Run tests**
+   ```
+   npm test
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Folder Highlights
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `src/components/` - Contains reusable UI components for authentication, cart, product display, layout, and more.
+- `src/context/` - Provides global state management using React Context API.
+- `src/pages/` - Main application pages for routing.
+- `src/hooks/` - Custom hooks for inventory, pagination, and filtering logic.
+- `src/data/` - Static product data.
+- `src/theme/` - Theme and color configuration.
+- `src/utils/` - Utility functions (e.g., toast notifications).
 
-### `npm run eject`
+## Deployment
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+After building the project (`npm run build`), deploy the contents of the `build/` folder to your preferred static hosting service (e.g., Netlify, Vercel, GitHub Pages).
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## License
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is for demonstration and educational purposes.
